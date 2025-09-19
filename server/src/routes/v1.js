@@ -1,8 +1,8 @@
-// src/routes/v1.js
 import { Router } from "express";
 import { getSourcesByTopic } from "../lib/sources.js";
 import { fetchTopicFeed } from "../lib/rss.js";
 import { getCache, setCache, delCache } from "../lib/cache.js";
+import summarizeRouter from "./summarize.js";
 
 const router = Router();
 
@@ -87,6 +87,7 @@ router.get("/news", async (req, res) => {
     });
   }
 });
+router.use("/", summarizeRouter);
 
 export default router;
 
