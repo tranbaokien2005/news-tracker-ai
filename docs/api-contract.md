@@ -1,6 +1,12 @@
-**Base URL (dev):** `http://localhost:5050/api/v1`
+Here’s your **API Contract v1** rewritten fully in English with a clear table-like structure:
 
-**Common Headers**:
+---
+
+# API Contract v1
+
+**Base URL (dev):** `http://localhost:5051/api/v1`
+
+### Common Headers
 
 * **Requests:** `Content-Type: application/json`
 * **Responses:** `Content-Type: application/json; charset=utf-8`
@@ -10,182 +16,60 @@
 
 ---
 
-## 1) GET `/news`
+## Slice 1 – News Feed (✅ Implemented)
 
-**Purpose:** Retrieve a list of articles by `topic` (standardized from RSS feeds).
+### **GET `/health`**
 
-**Query Parameters:**
-
-* `topic` *(string, required)* — e.g., `tech`, `finance`
-* `page` *(number, optional, default=1)* — pagination, 30 items per page
-
-**Response 200 Example:**
+**Purpose:** Check API status
+**Response Example:**
 
 ```json
 {
-  "topic": "tech",
-  "page": 1,
-  "count": 123,
-  "items": [
-    {
-      "id": "https://www.reuters.com/...",
-      "title": "Apple unveils new AI chip",
-      "url": "https://www.reuters.com/technology/article-123",
-      "source": "reuters.com",
-      "topic": "tech",
-      "publishedAt": "2025-09-16T10:00:00Z",
-      "snippet": "Apple introduced its latest chip with built-in AI acceleration..."
-    }
-  ]
+  "ok": true,
+  "version": "v1"
 }
 ```
 
-**Item Fields:**
+### **GET `/news`**
 
-* `id` *(string)* — unique identifier, usually the article URL
-* `title` *(string)*
-* `url` *(string, absolute URL)*
-* `source` *(string, hostname)*
-* `topic` *(string)*
-* `publishedAt` *(ISO 8601 datetime string)*
-* `snippet` *(string, optional)*
-
-**Errors:**
-
-* `400 Bad Request` — invalid topic
-
-  ```json
-  { "error": "Invalid topic" }
-  ```
-* `500 Internal Server Error` — server error
-
-  ```json
-  { "error": "Server error" }
-  ```
+**Purpose:** Retrieve a list of news articles by topic.
+➡️ See details: `api-slice-1-news.md`
 
 ---
 
-## 2) POST `/summarize`
+## Slice 2 – Summarize (🔜 Planned – MVP accepts raw text)
 
-**Purpose:** Generate an AI-powered summary of an article.
+### **POST `/summarize`**
 
-**Request Body (one of two forms):**
-
-```json
-{ "url": "https://www.reuters.com/technology/article-123" }
-```
-
-or
-
-```json
-{
-  "title": "Apple unveils new AI chip",
-  "snippet": "Apple introduced its latest chip with built-in AI acceleration..."
-}
-```
-
-**Response 200 Example:**
-
-```json
-{
-  "summary": "• Apple launched a new AI-accelerated chip.\n• Targeted for iPhone/Mac with better performance and battery.\n• Analysts expect competitive advantage in mobile AI.",
-  "tags": ["apple", "ai", "chipset"]
-}
-```
-
-**Rules:**
-
-* Summary should be **3–5 bullet points**, total ≤ \~80 words.
-* Server caches summaries by `url` (if provided) for ≥ 24h.
-* If article content cannot be fetched, server may use `title` + `snippet`.
-
-**Errors:**
-
-* `400 Bad Request` — missing both `url` and `title`
-
-  ```json
-  { "error": "Missing url or title" }
-  ```
-* `429 Too Many Requests` — exceeded rate limit
-
-  ```json
-  { "error": "Too Many Requests" }
-  ```
-* `500 Internal Server Error` — server/AI error
-
-  ```json
-  { "error": "Server error" }
-  ```
+**Purpose:** Generate a summary using AI.
+➡️ See details: `api-slice-2-summarize.md`
 
 ---
 
-## 3) POST `/recommend`
+## Slice 3 – Recommend (🔜 Planned)
 
-**Purpose:** Suggest 1–2 practical actions based on a `summary` and `topic`.
+### **POST `/recommend`**
 
-**Request Body:**
-
-```json
-{
-  "topic": "tech",
-  "summary": "Apple launched a new AI-accelerated chip..."
-}
-```
-
-**Response 200 Example:**
-
-```json
-{
-  "actions": [
-    "Track third-party benchmark results for real-world gains.",
-    "Follow Apple's next developer event for SDK updates."
-  ]
-}
-```
-
-**Rules:**
-
-* Must return **1–2 neutral, practical suggestions**.
-* Should **not provide financial advice**.
-* Fallback rules per `topic` if AI fails.
-
-**Errors:**
-
-* `400 Bad Request` — missing `summary`
-
-  ```json
-  { "error": "Missing summary" }
-  ```
-* `429 Too Many Requests` — exceeded rate limit
-
-  ```json
-  { "error": "Too Many Requests" }
-  ```
-* `500 Internal Server Error` — server/AI error
-
-  ```json
-  { "error": "Server error" }
-  ```
+**Purpose:** Suggest actions based on a given summary.
+➡️ See details: `api-slice-3-recommend.md`
 
 ---
 
-## 4) General Implementation Notes
+## General Implementation Notes
 
-* **Pagination:** 30 items/page (configurable via `pageSize` in future).
-* **Caching:**
+* **Pagination**: 30 items per page (configurable via `NEWS_PAGE_SIZE`).
+* **Caching**:
 
-  * `/news`: cache by topic/page for 15 minutes.
-  * `/summarize`: cache by url for 24h.
-* **CORS:** Only allow frontend origin after deployment.
-* **Logging:** Log server errors and empty model responses for debugging.
-* **Versioning:** Prefix with `/api/v1` to avoid breaking frontend in future upgrades.
+  * `/news`: cached per `topic` (TTL = `NEWS_CACHE_TTL`, default \~300s).
+  * `/summarize`: cached by **hash(text + params)** (TTL = `SUMMARIZE_CACHE_TTL`, default \~600s).
+* **CORS**: After deployment, only allow valid frontend origins.
+* **Logging**: Log server errors, `cache: hit/miss`, `elapsed_ms` for summarize.
+* **Versioning**: Prefix `/api/v1` to prevent breaking changes during upgrades.
 
 ---
 
-## 5) Sample Data Files (for FE mocking)
+## Sample Data (for FE Mocking)
 
 * `mock/news-tech.json` → sample response for `GET /news?topic=tech`
 * `mock/summarize.json` → sample response for `POST /summarize`
 * `mock/recommend.json` → sample response for `POST /recommend`
-
----
