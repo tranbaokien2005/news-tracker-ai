@@ -1,0 +1,61 @@
+{
+  "topic": "tech",
+  "page": 1,
+  "count": 6,
+  "items": [
+    {
+      "id": "https://www.reuters.com/technology/apple-ai-chip-2025",
+      "title": "Apple unveils new AI chip",
+      "url": "https://www.reuters.com/technology/article-123",
+      "source": "reuters.com",
+      "topic": "tech",
+      "publishedAt": "2025-09-16T10:00:00Z",
+      "snippet": "Apple introduced its latest chip with built-in AI acceleration..."
+    },
+    {
+      "id": "https://www.theverge.com/2025/09/15/google-ai-search-update",
+      "title": "Google rolls out major AI-powered search update",
+      "url": "https://www.theverge.com/2025/09/15/google-ai-search-update",
+      "source": "theverge.com",
+      "topic": "tech",
+      "publishedAt": "2025-09-15T14:30:00Z",
+      "snippet": "The new update integrates AI summaries directly into search results..."
+    },
+    {
+      "id": "https://techcrunch.com/2025/09/14/microsoft-copilot-enterprise",
+      "title": "Microsoft launches Copilot Enterprise Suite",
+      "url": "https://techcrunch.com/2025/09/14/microsoft-copilot-enterprise",
+      "source": "techcrunch.com",
+      "topic": "tech",
+      "publishedAt": "2025-09-14T09:00:00Z",
+      "snippet": "Microsoft expands its AI assistant Copilot with enterprise-grade tools..."
+    },
+    {
+      "id": "https://www.bbc.com/news/technology-66789123",
+      "title": "Nvidia announces next-gen GPU for AI workloads",
+      "url": "https://www.bbc.com/news/technology-66789123",
+      "source": "bbc.com",
+      "topic": "tech",
+      "publishedAt": "2025-09-13T18:15:00Z",
+      "snippet": "Nvidia claims its new GPUs offer 30% better efficiency for AI training..."
+    },
+    {
+      "id": "https://www.cnn.com/2025/09/12/tesla-robotaxi-ai",
+      "title": "Tesla begins robotaxi service in select US cities",
+      "url": "https://www.cnn.com/2025/09/12/tesla-robotaxi-ai",
+      "source": "cnn.com",
+      "topic": "tech",
+      "publishedAt": "2025-09-12T12:00:00Z",
+      "snippet": "Tesla’s long-awaited autonomous robotaxi service is finally live..."
+    },
+    {
+      "id": "https://www.wired.com/story/2025/09/meta-ai-translation-breakthrough",
+      "title": "Meta achieves breakthrough in AI translation",
+      "url": "https://www.wired.com/story/2025/09/meta-ai-translation-breakthrough",
+      "source": "wired.com",
+      "topic": "tech",
+      "publishedAt": "2025-09-11T08:45:00Z",
+      "snippet": "Meta says its new AI model can translate 200 languages in real time..."
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Tracker AI — Mock</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./app.js" type="module" defer></script>
+</head>
+<body>
+    <!-- Toast container -->
+    <div id="toast" aria-live="assertive" class="toast"></div>
+
+    <!-- Spinner overlay (ẩn/hiện bằng JS) -->
+    <div id="spinner" class="spinner hidden" aria-hidden="true"></div>
+    
+    <!--FEED SECTION  -->
+    <div id="feed"></div>
+
+
+    <header class="container">
+    <h1>News Tracker AI (Mock)</h1>
+    <div class="controls">
+      <label>
+        Topic:
+        <select id="topic">
+          <option value="tech" selected>Tech</option>
+          <option value="finance">Finance</option>
+        </select>
+      </label>
+      <button id="reload">Reload</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="status" class="status">Loading…</div>
+    <ul id="news-list" class="news"></ul>
+  </main>
+
+  <template id="item-tpl">
+    <li class="card">
+      <div class="meta">
+        <span class="source"></span>
+        <span class="dot">•</span>
+        <time class="time"></time>
+      </div>
+      <a class="title" target="_blank" rel="noopener"></a>
+      <p class="snippet"></p>
+      <div class="actions">
+        <button class="btn btn-secondary summarize">Summarize</button>
+        <button class="btn btn-ghost recommend">Actions</button>
+      </div>
+      <pre class="panel" hidden></pre>
+    </li>
+  </template>
+</body>
+</html>

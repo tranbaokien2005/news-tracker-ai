@@ -1,0 +1,35 @@
+{
+  "news": [
+    {
+      "id": "https://www.reuters.com/technology/apple-ai-chip-2025",
+      "title": "Apple unveils new AI chip",
+      "url": "https://www.reuters.com/technology/article-123",
+      "source": "reuters.com",
+      "topic": "tech",
+      "publishedAt": "2025-09-16T10:00:00Z",
+      "snippet": "Apple introduced its latest chip with built-in AI acceleration..."
+    },
+    {
+      "id": "https://www.bloomberg.com/markets/articles/xyz",
+      "title": "Fed signals rate pause",
+      "url": "https://www.bloomberg.com/markets/articles/xyz",
+      "source": "bloomberg.com",
+      "topic": "finance",
+      "publishedAt": "2025-09-16T09:30:00Z",
+      "snippet": "Central bank officials signal a potential pause after recent hikes..."
+    }
+  ],
+  "summarize": {
+    "summary": "• Apple launched a new AI-accelerated chip.\n• Targeted for iPhone/Mac with better performance and battery.\n• Analysts expect competitive advantage in mobile AI.",
+    "tags": ["apple", "ai", "chipset"]
+  },
+  "recommend": {
+    "actions": [
+      "Track third-party benchmark results for real-world gains.",
+      "Follow Apple's next developer event for SDK updates."
+    ]
+  },
+  "errors": {
+    "invalidTopic": { "error": "Invalid topic" }
+  }
+}
