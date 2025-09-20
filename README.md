@@ -1,10 +1,3 @@
-Hiểu rồi 👍 bạn muốn một cái **khung README chuẩn**, viết sẵn để về sau chỉ cần “điền thêm” chứ không phải chỉnh sửa nhiều.
-
----
-
-## ✅ Gợi ý format README dài hạn (có sẵn chỗ để bỏ ngõ)
-
-````markdown
 # 📖 News Tracker AI
 
 ## 📌 Giới thiệu
