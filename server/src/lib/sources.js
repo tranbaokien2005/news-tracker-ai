@@ -2,7 +2,7 @@ const DEFAULT_SOURCES = {
   tech: [
     { name: "theverge", url: "https://www.theverge.com/rss/index.xml" },
     { name: "bbc", url: "https://feeds.bbci.co.uk/news/technology/rss.xml" },
-    { name: "hackernews", url: "https://hnrss.org/frontpagexxx" }
+    { name: "hackernews", url: "https://hnrss.org/frontpage" }
   ],
   finance: [
     { name: "marketwatch-top", url: "https://www.marketwatch.com/rss/topstories" },
