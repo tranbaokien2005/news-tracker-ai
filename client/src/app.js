@@ -1,5 +1,5 @@
-import { fetchNews, summarizeText } from "./api.js";
-import { $topic, $reload, setLoading, toast, renderArticles } from "./ui.js";
+import { fetchNews, summarizeText } from "./api/api.js";
+import { $topic, $reload, setLoading, toast, renderArticles, $list, $status } from "./ui.js";
 
 async function load(topic) {
   setLoading(true);
@@ -7,9 +7,10 @@ async function load(topic) {
     const data = await fetchNews(topic);
 
     renderArticles(data.items, {
-      onSummarize: async (article, panel) => {
+      onSummarize: async (article, panel, btn) => {
         panel.hidden = false;
         panel.textContent = "Summarizing…";
+        btn.disabled = true;               // chống bấm liên tục
         try {
           const text = article.snippet || article.title || "";
           const res = await summarizeText(text);
@@ -17,13 +18,14 @@ async function load(topic) {
         } catch (e) {
           panel.textContent = `Error: ${e.message}`;
           toast("Summarize failed.");
+        } finally {
+          btn.disabled = false;
         }
       }
+      // Chưa có recommend → không truyền
     });
   } catch (e) {
     console.error(e);
-    const $list = document.getElementById("news-list");
-    const $status = document.getElementById("status");
     $list.innerHTML = "";
     $status.hidden = false;
     $status.textContent = `Failed to load: ${e.message}`;
@@ -33,9 +35,6 @@ async function load(topic) {
   }
 }
 
-// Events
 $reload.addEventListener("click", () => load($topic.value));
 $topic.addEventListener("change", () => load($topic.value));
-
-// First load
 load($topic.value || "tech");

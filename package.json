@@ -1,11 +1,11 @@
 {
-  "name": "news-tracker-ai-server",
+  "name": "news-tracker-ai",
   "version": "1.0.0",
   "type": "module",
-  "main": "src/index.js",
+  "main": "server/src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "server:start": "node server/src/index.js",
+    "server:dev": "nodemon server/src/index.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

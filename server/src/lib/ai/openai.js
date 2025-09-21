@@ -16,8 +16,8 @@ export async function openaiSummarize({
   title,
   topic,
 }) {
-  if (!process.env.AI_API_KEY) {
-    const err = new Error("Missing AI_API_KEY");
+  if (!process.env.OPENAI_API_KEY) {
+    const err = new Error("Missing OPENAI_API_KEY");
     err.status = 502;
     throw err;
   }

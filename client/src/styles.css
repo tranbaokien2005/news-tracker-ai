@@ -1,12 +1,19 @@
 :root { --gap: 14px; --muted:#7a7a7a; }
 * { box-sizing: border-box; }
-body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-       margin:0; background:#0b0b0c; color:#f2f2f2; }
-.container { max-width: 900px; margin: 0 auto; padding: 18px; }
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  margin:0; background:#0b0b0c; color:#f2f2f2;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 16px; }
 header h1 { margin:0 0 8px; font-size: 22px; }
 .controls { display:flex; gap: var(--gap); align-items:center; }
-select, button { padding:8px 12px; border-radius:10px; border:1px solid #2a2a2a; background:#141416; color:#f2f2f2; }
+
+select, button {
+  padding:8px 12px; border-radius:10px; border:1px solid #2a2a2a;
+  background:#141416; color:#f2f2f2;
+}
 button:hover { filter: brightness(1.1); cursor:pointer; }
+
 .status { color: var(--muted); margin: 10px 0 14px; }
 .news { list-style:none; padding:0; display:grid; gap: var(--gap); }
 .card { padding:16px; background:#121214; border:1px solid #222; border-radius:14px; }
@@ -17,7 +24,10 @@ button:hover { filter: brightness(1.1); cursor:pointer; }
 .actions { display:flex; gap:8px; }
 .btn-secondary { background:#1e293b; }
 .btn-ghost { background:transparent; border:1px solid #2a2a2a; }
-.panel { margin:10px 0 0; padding:10px; background:#0e0f11; border:1px dashed #2a2a2a; border-radius:10px; white-space:pre-wrap; }
+.panel {
+  margin:10px 0 0; padding:10px; background:#0e0f11; border:1px dashed #2a2a2a;
+  border-radius:10px; white-space:pre-wrap;
+}
 .dot { color:#3a3a3a; }
 
 /* Spinner */
@@ -33,18 +43,6 @@ button:hover { filter: brightness(1.1); cursor:pointer; }
 .hidden { display: none !important; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Skeleton */
-.skeleton {
-  background: linear-gradient(90deg,#222 25%,#2a2a2a 37%,#222 63%);
-  background-size: 400% 100%;
-  animation: shimmer 1.2s ease-in-out infinite;
-  border-radius: 8px;
-}
-@keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:0 0} }
-.skel-card { padding: 16px; border: 1px dashed #333; border-radius: 12px; }
-.skel-title { height: 18px; margin-bottom: 10px; }
-.skel-sub { height: 12px; width: 70%; }
-
 /* Toast */
 .toast {
   position: fixed; right: 16px; bottom: 16px; z-index: 60;
@@ -55,5 +53,17 @@ button:hover { filter: brightness(1.1); cursor:pointer; }
 }
 .toast.show { opacity: 1; transform: translateY(0); }
 
-/* Disabled state for buttons/selects */
-button:disabled, select:disabled { opacity: .6; cursor: not-allowed; }
+/* A11y */
+:focus-visible { outline: 2px solid #64748b; outline-offset: 2px; }
+
+/* Mobile tweaks */
+@media (max-width: 600px){
+  .actions { flex-wrap: wrap; }
+  .card { padding: 14px; }
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce){
+  .spinner::after { animation: none; }
+  .toast { transition: none; }
+}
