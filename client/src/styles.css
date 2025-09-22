@@ -20,7 +20,13 @@ button:hover { filter: brightness(1.1); cursor:pointer; }
 .meta { color: var(--muted); font-size: 12px; display:flex; gap:6px; align-items:center; }
 .title { display:block; color:#fff; font-weight:600; margin:6px 0 6px; text-decoration:none; }
 .title:hover { text-decoration:underline; }
-.snippet { color:#c9c9c9; margin:0 0 10px; }
+.snippet {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;   /* số dòng muốn hiển thị */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .actions { display:flex; gap:8px; }
 .btn-secondary { background:#1e293b; }
 .btn-ghost { background:transparent; border:1px solid #2a2a2a; }
@@ -66,4 +72,37 @@ button:hover { filter: brightness(1.1); cursor:pointer; }
 @media (prefers-reduced-motion: reduce){
   .spinner::after { animation: none; }
   .toast { transition: none; }
+}
+
+/* Pagination */
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.pager button {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #2a2a2a;
+  background: #141416;
+  color: #f2f2f2;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.pager button:hover:not(:disabled) {
+  background: #1f2023;
+}
+
+.pager button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#pageIndicator {
+  font-size: 14px;
+  color: #bdbdbd;
 }

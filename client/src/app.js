@@ -1,7 +1,5 @@
 import { fetchNews, summarizeText } from "./api/api.js";
-import {
-  $topic, $reload, setLoading, toast, renderArticles, $list, $status
-} from "./ui.js";
+import { $topic, $reload, setLoading, toast, renderArticles, $list, $status, $prev, $next, updatePager } from "./ui.js";
 
 
 const state = {
@@ -87,3 +85,4 @@ $topic.addEventListener("change", () => {
 
 // Boot
 load($topic.value || "tech", 1);
+

@@ -1,3 +1,4 @@
+// ===== Refs (controls, list, templates, overlays) =====
 export const $topic   = document.getElementById("topic");
 export const $reload  = document.getElementById("reload");
 export const $list    = document.getElementById("news-list");
@@ -6,6 +7,7 @@ export const $tpl     = document.getElementById("item-tpl");
 export const $toast   = document.getElementById("toast");
 export const $spinner = document.getElementById("spinner");
 
+// ===== Loading / Toast =====
 export function setLoading(v) {
   $spinner.classList.toggle("hidden", !v);
   $spinner.setAttribute("aria-hidden", String(!v));
@@ -21,6 +23,7 @@ export function toast(msg = "Something went wrong.") {
   toast._t = setTimeout(() => $toast.classList.remove("show"), 3000);
 }
 
+// ===== Utils =====
 function timeAgo(iso) {
   if (!iso) return "";
   const t = new Date(iso);
@@ -32,6 +35,15 @@ function timeAgo(iso) {
   return `${Math.floor(diff / 86400)}d ago`;
 }
 
+//làm gọn excerpt (cắt phần “Article URL… Comments… Points…”)
+function cleanExcerpt(txt = "") {
+  return String(txt)
+    .replace(/Article URL:.*$/i, "")  // cắt từ "Article URL" trở đi (nếu có)
+    .replace(/\s{2,}/g, " ")          // gọn khoảng trắng thừa
+    .trim();
+}
+
+// ===== Renderer =====
 export function renderArticles(items, { onSummarize, onRecommend } = {}) {
   $list.innerHTML = "";
   if (!items?.length) {
@@ -43,6 +55,7 @@ export function renderArticles(items, { onSummarize, onRecommend } = {}) {
 
   for (const a of items) {
     const li = $tpl.content.firstElementChild.cloneNode(true);
+
     li.querySelector(".source").textContent = a.source || "unknown";
     li.querySelector(".time").textContent = timeAgo(a.publishedAt || new Date().toISOString());
 
@@ -50,7 +63,8 @@ export function renderArticles(items, { onSummarize, onRecommend } = {}) {
     $title.textContent = a.title || "(no title)";
     $title.href = a.url || "#";
 
-    li.querySelector(".snippet").textContent = a.snippet || "";
+    // BE trả 'excerpt', không phải 'snippet'
+    li.querySelector(".snippet").textContent = cleanExcerpt(a.excerpt || "");
 
     const panel   = li.querySelector(".panel");
     const btnSum  = li.querySelector(".summarize");
@@ -71,4 +85,24 @@ export function renderArticles(items, { onSummarize, onRecommend } = {}) {
 
     $list.appendChild(li);
   }
+}
+
+// ===== Pager exports =====
+export const $prev = document.getElementById("prevPage");
+export const $next = document.getElementById("nextPage");
+export const $pageIndicator = document.getElementById("pageIndicator");
+
+/**
+ * Cập nhật trạng thái phân trang
+ * @param {{page:number, totalPages:number}} param0
+ */
+export function updatePager({ page, totalPages }) {
+  if (!$prev || !$next || !$pageIndicator) return;
+
+  const tp = Math.max(1, Number(totalPages || 1));
+  const cp = Math.min(Math.max(1, Number(page || 1)), tp);
+
+  $pageIndicator.textContent = `Page ${cp} / ${tp}`;
+  $prev.disabled = cp <= 1;
+  $next.disabled = cp >= tp;
 }
