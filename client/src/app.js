@@ -1,14 +1,20 @@
 import { fetchNews, summarizeText } from "./api/api.js";
-import { $topic, $reload, setLoading, toast, renderArticles, $list, $status, $prev, $next, updatePager } from "./ui.js";
-
+import {
+  $topic, $reload, setLoading, toast, renderArticles, $list, $status,
+  $prev, $next, updatePager
+} from "./ui.js";
 
 const state = {
-  topic: "tech",
+  topic: ($topic?.value) || (window.ENV?.DEFAULT_TOPIC ?? "tech"),
   page: 1,
   totalPages: 1,
 };
 
 async function load(topic = state.topic, page = state.page) {
+  // khoá pager khi đang tải để tránh spam
+  if ($prev) $prev.disabled = true;
+  if ($next) $next.disabled = true;
+
   setLoading(true);
   try {
     const { items, page: currentPage, pageSize, count } = await fetchNews(topic, page);
@@ -25,7 +31,6 @@ async function load(topic = state.topic, page = state.page) {
         panel.textContent = "Summarizing…";
         btn.disabled = true;
         try {
-          // ⚠️ BE dùng 'excerpt', không phải 'snippet'
           const text = article.excerpt || article.title || "";
           const res = await summarizeText(text);
           panel.textContent = res.summary || "(no summary)";
@@ -42,16 +47,20 @@ async function load(topic = state.topic, page = state.page) {
     $status.hidden = true;
     $status.textContent = "";
 
-    // cập nhật paginator nếu có
-    // if (typeof updatePager === "function") {
-    //   updatePager({ page: state.page, totalPages: state.totalPages });
-    // }
+    // cập nhật paginator
+    updatePager({ page: state.page, totalPages: state.totalPages });
+
+    // UX: kéo lên đầu danh sách mỗi lần đổi trang
+    window.scrollTo({ top: 0, behavior: "smooth" });
   } catch (e) {
     console.error(e);
     $list.innerHTML = "";
     $status.hidden = false;
     $status.textContent = `Failed to load: ${e.message}`;
     toast("Cannot load news. Check backend or mock server.");
+
+    // vẫn cập nhật pager để phản ánh trạng thái hiện tại
+    updatePager({ page: state.page, totalPages: Math.max(state.totalPages, 1) });
   } finally {
     setLoading(false);
   }
@@ -64,25 +73,24 @@ $reload.addEventListener("click", () => {
 });
 
 $topic.addEventListener("change", () => {
-  state.topic = $topic.value;      // nhớ đã có option 'world'
+  state.topic = $topic.value;      // tech | finance | world
   state.page = 1;                  // đổi topic reset trang
   load(state.topic, state.page);
 });
 
-// Nếu bạn đã có nút Prev/Next trong HTML & binding trong ui.js:
-// $prev?.addEventListener("click", () => {
-//   if (state.page > 1) {
-//     state.page -= 1;
-//     load(state.topic, state.page);
-//   }
-// });
-// $next?.addEventListener("click", () => {
-//   if (state.page < state.totalPages) {
-//     state.page += 1;
-//     load(state.topic, state.page);
-//   }
-// });
+$prev?.addEventListener("click", () => {
+  if (state.page > 1) {
+    state.page -= 1;
+    load(state.topic, state.page);
+  }
+});
+
+$next?.addEventListener("click", () => {
+  if (state.page < state.totalPages) {
+    state.page += 1;
+    load(state.topic, state.page);
+  }
+});
 
 // Boot
-load($topic.value || "tech", 1);
-
+load(state.topic, 1);
