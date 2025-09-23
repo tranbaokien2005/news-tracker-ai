@@ -162,6 +162,13 @@ Open `client/src/index.html` with Live Server for mock demo.
 
 ---
 
+## 📚 Showcase Case Study
+
+See detailed explanation:  
+[Why Cache and Rate-Limit Matter (Case Study)](docs/showcase-cache-rate-limit.md)
+
+---
+
 ## 📜 License
 
 MIT License – see [LICENSE](LICENSE) for details.
