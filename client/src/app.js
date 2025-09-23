@@ -4,11 +4,53 @@ import {
   $prev, $next, updatePager
 } from "./ui.js";
 
+// ---------- URL + LocalStorage helpers ----------
+const STORAGE_KEY = "nta:view";
+
+function validTopic(t) {
+  const list = window.ENV?.TOPICS || ["tech", "finance", "world"];
+  return list.includes(t) ? t : (window.ENV?.DEFAULT_TOPIC ?? "tech");
+}
+
+function getInitialView() {
+  // 1) Ưu tiên URL ?topic=&page=
+  const sp = new URLSearchParams(location.search);
+  let topic = validTopic(sp.get("topic") || "");
+  let page  = Math.max(1, parseInt(sp.get("page") || "1", 10) || 1);
+
+  // 2) Nếu URL không có gì → thử lấy localStorage
+  if (!sp.has("topic") && !sp.has("page")) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      if (saved.topic) topic = validTopic(saved.topic);
+      if (saved.page)  page  = Math.max(1, parseInt(saved.page, 10) || 1);
+    } catch (_) {}
+  }
+  return { topic, page };
+}
+
+function persistView(topic, page) {
+  // Lưu localStorage
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ topic, page })); } catch (_) {}
+
+  // Đồng bộ URL (?topic=&page=) mà không reload
+  const sp = new URLSearchParams(location.search);
+  sp.set("topic", topic);
+  sp.set("page", String(page));
+  history.replaceState(null, "", `${location.pathname}?${sp.toString()}`);
+}
+
+// ---------- App state ----------
+const initial = getInitialView();
+
 const state = {
-  topic: ($topic?.value) || (window.ENV?.DEFAULT_TOPIC ?? "tech"),
-  page: 1,
+  topic: initial.topic,
+  page: initial.page,
   totalPages: 1,
 };
+
+// Đồng bộ select ban đầu theo state
+if ($topic && $topic.value !== state.topic) $topic.value = state.topic;
 
 async function load(topic = state.topic, page = state.page) {
   // khoá pager khi đang tải để tránh spam
@@ -21,7 +63,7 @@ async function load(topic = state.topic, page = state.page) {
 
     // cập nhật state từ server
     state.topic = topic;
-    state.page = currentPage || page;
+    state.page  = currentPage || page;
     state.totalPages = pageSize > 0 ? Math.ceil(count / pageSize) : 1;
 
     // render list
@@ -49,6 +91,9 @@ async function load(topic = state.topic, page = state.page) {
 
     // cập nhật paginator
     updatePager({ page: state.page, totalPages: state.totalPages });
+
+    // Đồng bộ URL + lưu vị trí
+    persistView(state.topic, state.page);
 
     // UX: kéo lên đầu danh sách mỗi lần đổi trang
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -93,4 +138,4 @@ $next?.addEventListener("click", () => {
 });
 
 // Boot
-load(state.topic, 1);
+load(state.topic, state.page);
