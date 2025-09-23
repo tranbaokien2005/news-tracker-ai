@@ -6,10 +6,34 @@ export const $status  = document.getElementById("status");
 export const $tpl     = document.getElementById("item-tpl");
 export const $toast   = document.getElementById("toast");
 export const $spinner = document.getElementById("spinner");
+
 // ===== Pager exports =====
 export const $prev = document.getElementById("prevPage");
 export const $next = document.getElementById("nextPage");
 export const $pageIndicator = document.getElementById("pageIndicator");
+
+// ===== Header Meta =====
+export const $listHeader = document.getElementById("listHeader");
+
+/**
+ * Render cache badge + meta info (page, total items)
+ */
+export function renderListHeader({ cache, page, totalPages, count }) {
+  if (!$listHeader) return;
+
+  const isHit = cache === "hit";
+  const badge = isHit
+    ? `<span class="badge cached" title="Served from cache">Cached</span>`
+    : `<span class="badge fresh" title="Fresh fetch">Fresh</span>`;
+
+  $listHeader.innerHTML = `
+    <div class="list-meta">
+      ${badge}
+      <span class="meta">Page ${page}/${Math.max(1, totalPages)}</span>
+      <span class="meta">Items: ${count}</span>
+    </div>
+  `;
+}
 
 // ===== Loading / Toast =====
 export function setLoading(v) {
@@ -41,7 +65,7 @@ function timeAgo(iso) {
   return `${Math.floor(diff / 86400)}d ago`;
 }
 
-//làm gọn excerpt (cắt phần “Article URL… Comments… Points…”)
+// làm gọn excerpt (cắt phần “Article URL… Comments… Points…”)
 function cleanExcerpt(txt = "") {
   return String(txt)
     .replace(/Article URL:.*$/i, "")  // cắt từ "Article URL" trở đi (nếu có)
