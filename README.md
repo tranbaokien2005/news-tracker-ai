@@ -1,22 +1,42 @@
 # 📖 News Tracker AI
 
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js)](https://nodejs.org) 
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js)](https://nodejs.org)
 [![Express](https://img.shields.io/badge/Express.js-Backend-blue?logo=express)](https://expressjs.com)
 [![Postman](https://img.shields.io/badge/Postman-Collection-orange?logo=postman)](docs/postman/news-tracker-ai_collection.json)
+[![OpenAI](https://img.shields.io/badge/OpenAI-API-black?logo=openai)](https://platform.openai.com)
+[![CI](https://github.com/<username>/news-tracker-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/<username>/news-tracker-ai/actions/workflows/ci.yml)
 
 ## 📌 Introduction
+
 **News Tracker AI** is a backend showcase project built with **Node.js + Express**, designed to:
-- Fetch & normalize news from multiple RSS sources.  
-- Apply caching & pagination for efficiency.  
-- Integrate **AI-powered summarization** (done) and recommendations (planned).  
+
+* Fetch & normalize news from multiple RSS sources.
+* Apply caching & pagination for efficiency.
+* Integrate **AI-powered summarization** (done) and recommendations (planned).
 
 👉 This project is part of a **personal portfolio**.
 
 ---
 
+## 📑 Table of Contents
+
+* [🚀 Getting Started](#-getting-started)
+* [📂 Project Structure](#-project-structure)
+* [📡 API Endpoints](#-api-endpoints)
+* [📝 API Contract](#-api-contract)
+* [🧪 Testing](#-testing)
+* [⚙️ Environment Variables](#️-environment-variables)
+* [🖥 Frontend (Mock Client)](#-frontend-mock-client)
+* [📸 Screenshots & Demo](#-screenshots--demo)
+* [🗺 Roadmap](#-roadmap)
+* [📚 Showcase Case Study](#-showcase-case-study)
+* [👤 Author](#-author)
+* [📜 License](#-license)
+
+---
+
 ## 🚀 Getting Started
 
-### Setup
 ```bash
 # Clone repo
 git clone https://github.com/<username>/news-tracker-ai.git
@@ -30,7 +50,7 @@ npm install
 
 # Run dev server
 npm run dev
-````
+```
 
 API available at:
 
@@ -61,20 +81,18 @@ http://localhost:5051/api/v1
 
 ### Slice 2 – Summarize (✅ Done)
 
-* `POST /api/v1/summarize`
-  Summarizes input text using AI (with cache + rate limiting).
+* `POST /api/v1/summarize` → Summarizes input text using AI (with cache + rate limiting).
   ➡️ Details: [`docs/api-slice-2-summarize.md`](docs/api-slice-2-summarize.md)
 
 ### Slice 3 – Recommend (🔜 Planned)
 
-* `POST /api/v1/recommend`
-  Suggests actions based on summaries.
+* `POST /api/v1/recommend` → Suggests actions based on summaries.
 
 ---
 
 ## 📝 API Contract
 
-Full spec: [`docs/api-contract.md`](docs/api-contract.md)
+See full spec: [`docs/api-contract.md`](docs/api-contract.md)
 
 ---
 
@@ -86,7 +104,7 @@ Full spec: [`docs/api-contract.md`](docs/api-contract.md)
 * `POST /summarize` → validates summary output
 
 Collection: [`docs/postman/news-tracker-ai_collection.json`](docs/postman/news-tracker-ai_collection.json)
-Test run evidence: [`docs/postman/news-tracker-ai_test_run.json`](docs/postman/news-tracker-ai_test_run.json)
+Test evidence: [`docs/postman/news-tracker-ai_test_run.json`](docs/postman/news-tracker-ai_test_run.json)
 
 ![Postman Evidence](docs/postman/test-results.png)
 
@@ -146,10 +164,6 @@ Open `client/src/index.html` with Live Server for mock demo.
 
 ![News + Summarize Demo](./docs/demo.gif)
 
-```markdown
-![Demo](docs/demo.gif)
-```
-
 ---
 
 ## 🗺 Roadmap
@@ -164,11 +178,23 @@ Open `client/src/index.html` with Live Server for mock demo.
 
 ## 📚 Showcase Case Study
 
-See detailed explanation:  
+Detailed explanation:
 [Why Cache and Rate-Limit Matter (Case Study)](docs/showcase-cache-rate-limit.md)
+
+---
+
+## 👤 Author
+
+* **Name**: Tran Bao Kien
+* **GitHub**: [tranbaokien2005](https://github.com/tranbaokien2005)
+* **LinkedIn**: *\[add-your-linkedin-here]*
+* **Email**: *\[[your-email@example.com](mailto:your-email@example.com)]*
 
 ---
 
 ## 📜 License
 
 MIT License – see [LICENSE](LICENSE) for details.
+
+---
+

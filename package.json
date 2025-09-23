@@ -1,11 +1,13 @@
 {
   "name": "news-tracker-ai",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
   "main": "server/src/index.js",
   "scripts": {
     "server:start": "node server/src/index.js",
-    "server:dev": "nodemon server/src/index.js"
+    "server:dev": "nodemon server/src/index.js",
+    "test:postman": "newman run docs/postman/news-tracker-ai_collection.json --reporters cli,json --reporter-json-export docs/postman/news-tracker-ai_newman_result.ci.json"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -17,6 +19,7 @@
     "rss-parser": "^3.13.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "wait-on": "^7.0.1"
   }
 }
