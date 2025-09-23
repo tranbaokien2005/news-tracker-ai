@@ -6,12 +6,18 @@ export const $status  = document.getElementById("status");
 export const $tpl     = document.getElementById("item-tpl");
 export const $toast   = document.getElementById("toast");
 export const $spinner = document.getElementById("spinner");
+// ===== Pager exports =====
+export const $prev = document.getElementById("prevPage");
+export const $next = document.getElementById("nextPage");
+export const $pageIndicator = document.getElementById("pageIndicator");
 
 // ===== Loading / Toast =====
 export function setLoading(v) {
   $spinner.classList.toggle("hidden", !v);
   $spinner.setAttribute("aria-hidden", String(!v));
-  [$topic, $reload].forEach(el => (el.disabled = v));
+  [$topic, $reload, $prev, $next].forEach(el => {
+    if (el) el.disabled = v;
+  });
   $status.textContent = v ? "Loading…" : "";
   $status.hidden = !v;
 }
@@ -86,11 +92,6 @@ export function renderArticles(items, { onSummarize, onRecommend } = {}) {
     $list.appendChild(li);
   }
 }
-
-// ===== Pager exports =====
-export const $prev = document.getElementById("prevPage");
-export const $next = document.getElementById("nextPage");
-export const $pageIndicator = document.getElementById("pageIndicator");
 
 /**
  * Cập nhật trạng thái phân trang
