@@ -106,3 +106,37 @@ button:hover { filter: brightness(1.1); cursor:pointer; }
   font-size: 14px;
   color: #bdbdbd;
 }
+
+/* ===== Cache Badge + Meta ===== */
+.list-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 14px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px; /* bo tròn viên thuốc */
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #2a2a2a;
+}
+
+.badge.cached {
+  background: #133a1c;
+  border-color: #266a34;
+  color: #8fffa5;
+}
+
+.badge.fresh {
+  background: #1a1a1a;
+  border-color: #3a3a3a;
+  color: #ccc;
+}
+
+.meta {
+  font-size: 12px;
+  opacity: 0.8;
+}
