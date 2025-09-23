@@ -1,13 +1,9 @@
 // server/src/lib/ai/openai.js
 import OpenAI from "openai";
 
-const client = new OpenAI({
-  apiKey: process.env.AI_API_KEY, // <— keep AI_API_KEY consistently
-});
-
 /**
- * Call OpenAI to summarize text.
- * Returns { content, usage }
+ * Gọi OpenAI để tóm tắt văn bản.
+ * Trả về { content, usage }
  */
 export async function openaiSummarize({
   text,
@@ -17,23 +13,20 @@ export async function openaiSummarize({
   title,
   topic,
 }) {
-  // If you really want to guard, check the SAME var you used above:
-  if (!process.env.AI_API_KEY) {
-    const err = new Error("Missing AI_API_KEY");
+  // ✅ Lấy API key theo env của dự án; không tạo client ở top-level
+  const apiKey = process.env.AI_API_KEY || process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    const err = new Error("Missing OPENAI_API_KEY/AI_API_KEY");
     err.status = 502;
     throw err;
   }
+  const client = new OpenAI({ apiKey });
 
   const modeHint =
     mode === "paragraph"
       ? "Write one compact paragraph (~80–120 words)."
       : "Write 3–5 concise bullet points.";
-
-  const langHint =
-    lang && lang !== "auto"
-      ? `Write in ${lang}.`
-      : "Detect the input language and write in that language.";
-
+  const langHint = lang && lang !== "auto" ? `Write in ${lang}.` : "Detect the input language and write in that language.";
   const topicHint = topic ? `Topic: ${topic}.` : "";
 
   const system = [

@@ -1,16 +1,19 @@
 // server/src/middleware/aiRateLimit.js
-import rateLimit from "express-rate-limit";
-
-const windowMs = parseInt(process.env.AI_RATE_WINDOW_MS || "60000", 10); // 60s
-const max = parseInt(process.env.AI_RATE_MAX || "5", 10);               // 5 req / window
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 
 const aiRateLimit = rateLimit({
-  windowMs,
-  max,
-  standardHeaders: true,
+  windowMs: Number(process.env.AI_RATE_WINDOW_MS || 60_000),
+  // v7+ dùng 'limit' (không phải 'max')
+  limit: Number(process.env.AI_RATE_MAX || 5),
+
+  // headers chuẩn
+  standardHeaders: "draft-7",
   legacyHeaders: false,
-  keyGenerator: (req /*, res*/) => req.ip, // sau này có auth thì đổi thành userId
-  handler: (_req, res /*, next, options*/) => {
+
+  // ✅ BẮT BUỘC: sinh key hợp lệ cho IPv4/IPv6
+  keyGenerator: ipKeyGenerator(),
+
+  handler: (_req, res) => {
     res.status(429).json({
       error: "RATE_LIMITED",
       message: "Too many requests, please try later.",
