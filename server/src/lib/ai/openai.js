@@ -1,12 +1,13 @@
+// server/src/lib/ai/openai.js
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  apiKey: process.env.AI_API_KEY,
+  apiKey: process.env.AI_API_KEY, // <— keep AI_API_KEY consistently
 });
 
 /**
- * Gọi OpenAI để tóm tắt văn bản.
- * Trả về { content, usage }
+ * Call OpenAI to summarize text.
+ * Returns { content, usage }
  */
 export async function openaiSummarize({
   text,
@@ -16,8 +17,9 @@ export async function openaiSummarize({
   title,
   topic,
 }) {
-  if (!process.env.OPENAI_API_KEY) {
-    const err = new Error("Missing OPENAI_API_KEY");
+  // If you really want to guard, check the SAME var you used above:
+  if (!process.env.AI_API_KEY) {
+    const err = new Error("Missing AI_API_KEY");
     err.status = 502;
     throw err;
   }
@@ -49,9 +51,7 @@ export async function openaiSummarize({
     "=== ARTICLE START ===",
     text,
     "=== ARTICLE END ===",
-  ]
-    .filter(Boolean)
-    .join("\n");
+  ].filter(Boolean).join("\n");
 
   try {
     const r = await client.chat.completions.create({
@@ -71,14 +71,9 @@ export async function openaiSummarize({
     }
     return {
       content,
-      usage: r?.usage || {
-        prompt_tokens: 0,
-        completion_tokens: 0,
-        total_tokens: 0,
-      },
+      usage: r?.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
     };
   } catch (e) {
-    // Chuẩn hoá lỗi cho tầng route xử lý
     const err = new Error("Failed to generate summary");
     err.status = 502;
     err.cause = e;
