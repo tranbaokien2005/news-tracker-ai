@@ -1,6 +1,6 @@
 import { fetchNews, summarizeText } from "./api/api.js";
 import {
-  $topic, $reload, setLoading, toast, renderArticles, $list, $status,
+  $topic, $reload, setLoading, toast, renderArticles, renderListHeader, $list, $status,
   $prev, $next, updatePager
 } from "./ui.js";
 
@@ -59,12 +59,22 @@ async function load(topic = state.topic, page = state.page) {
 
   setLoading(true);
   try {
-    const { items, page: currentPage, pageSize, count } = await fetchNews(topic, page);
+    // Lấy thêm field cache
+    const { items, page: currentPage, pageSize, count, cache } = await fetchNews(topic, page);
 
     // cập nhật state từ server
     state.topic = topic;
     state.page  = currentPage || page;
     state.totalPages = pageSize > 0 ? Math.ceil(count / pageSize) : 1;
+
+    // render header meta (badge cache + page info)
+    // TODO: Hide cache badge in production (only show in dev for debugging)
+    renderListHeader({
+      cache,                        // "hit" | "miss"
+      page: state.page,
+      totalPages: state.totalPages,
+      count: count ?? 0
+    });
 
     // render list
     renderArticles(items, {
@@ -110,6 +120,7 @@ async function load(topic = state.topic, page = state.page) {
     setLoading(false);
   }
 }
+
 
 // Events
 $reload.addEventListener("click", () => {
