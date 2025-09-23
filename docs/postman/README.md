@@ -8,5 +8,11 @@ Env: local (mock) — baseUrl: http://localhost:5051
 
 ## Run
 - Kết quả: All tests passed (xem `news-tracker-ai_test_run.json`)
-- Screenshot:
-![Run Pass](./img/run-1.png)
+![Postman Tests Result](test-results.png)
+
+### 🚀 Run Postman Tests via CLI (Newman)
+```bash
+npm install -g newman
+newman run docs/postman/news-tracker-ai_collection.json \
+  --reporters cli,json \
+  --reporter-json-export docs/postman/news-tracker-ai_newman_result.json
