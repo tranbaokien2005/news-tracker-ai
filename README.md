@@ -2,41 +2,41 @@
 
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js)](https://nodejs.org) 
 [![Express](https://img.shields.io/badge/Express.js-Backend-blue?logo=express)](https://expressjs.com)
-[![Postman](https://img.shields.io/badge/Postman-Tests%20Passed-orange?logo=postman)](https://www.postman.com)
+[![Postman](https://img.shields.io/badge/Postman-Collection-orange?logo=postman)](docs/postman/news-tracker-ai_collection.json)
 
 ## 📌 Introduction
-**News Tracker AI** is a demo backend project built with **Node.js + Express**, designed to:
+**News Tracker AI** is a backend showcase project built with **Node.js + Express**, designed to:
 - Fetch & normalize news from multiple RSS sources.  
-- Apply temporary caching & pagination.  
-- Integrate **AI-powered summarization** and (future) recommendations.  
+- Apply caching & pagination for efficiency.  
+- Integrate **AI-powered summarization** (done) and recommendations (planned).  
 
-👉 This project is part of a **showcase portfolio**.
+👉 This project is part of a **personal portfolio**.
 
 ---
 
-## 🚀 Development – Backend
+## 🚀 Getting Started
 
 ### Setup
-1. Clone repo:
-   ```bash
-   git clone https://github.com/<username>/news-tracker-ai.git
-   cd news-tracker-ai/server
+```bash
+# Clone repo
+git clone https://github.com/<username>/news-tracker-ai.git
+cd news-tracker-ai/server
+
+# Copy env file and configure
+cp .env.example .env
+
+# Install dependencies
+npm install
+
+# Run dev server
+npm run dev
 ````
 
-2. Copy `.env.example` → `.env` and configure variables.
+API available at:
 
-3. Install dependencies and run:
-
-   ```bash
-   npm install
-   npm run dev
-   ```
-
-4. API will run at:
-
-   ```
-   http://localhost:5051/api/v1
-   ```
+```
+http://localhost:5051/api/v1
+```
 
 ---
 
@@ -44,43 +44,37 @@
 
 ```
 /server        → Express backend
-/docs          → API contract & slices
-/docs/postman  → Postman collection + test evidence
+/docs          → API contract & slice docs
+/docs/postman  → Postman collection + test results
 /client        → Mock frontend (optional demo)
 ```
 
 ---
 
-## 📡 Available Endpoints
+## 📡 API Endpoints
 
 ### Slice 1 – News Feed (✅ Done)
 
 * `GET /api/v1/health`
 * `GET /api/v1/news?topic=tech&page=1[&forceRefresh=1]`
-
-➡️ Details: [`docs/api-slice-1-news.md`](docs/api-slice-1-news.md)
-
----
+  ➡️ Details: [`docs/api-slice-1-news.md`](docs/api-slice-1-news.md)
 
 ### Slice 2 – Summarize (✅ Done)
 
 * `POST /api/v1/summarize`
-* Summarizes input text using AI (with cache + rate limiting).
-
-➡️ Details: [`docs/api-slice-2-summarize.md`](docs/api-slice-2-summarize.md)
-
----
+  Summarizes input text using AI (with cache + rate limiting).
+  ➡️ Details: [`docs/api-slice-2-summarize.md`](docs/api-slice-2-summarize.md)
 
 ### Slice 3 – Recommend (🔜 Planned)
 
 * `POST /api/v1/recommend`
-* Suggest actions based on a given summary.
+  Suggests actions based on summaries.
 
 ---
 
 ## 📝 API Contract
 
-See full API contract: [`docs/api-contract.md`](docs/api-contract.md)
+Full spec: [`docs/api-contract.md`](docs/api-contract.md)
 
 ---
 
@@ -88,14 +82,15 @@ See full API contract: [`docs/api-contract.md`](docs/api-contract.md)
 
 ✅ Postman tests included:
 
-* `GET /news` (status, JSON, items, pagination, cache)
-* `POST /summarize` (status, JSON, summary field)
+* `GET /news` → status, JSON, pagination, cache hit/miss
+* `POST /summarize` → validates summary output
 
-Run evidence: [`docs/postman/news-tracker-ai_test_run.json`](docs/postman/news-tracker-ai_test_run.json)
+Collection: [`docs/postman/news-tracker-ai_collection.json`](docs/postman/news-tracker-ai_collection.json)
+Test run evidence: [`docs/postman/news-tracker-ai_test_run.json`](docs/postman/news-tracker-ai_test_run.json)
 
 ![Postman Evidence](docs/postman/test-results.png)
 
-### Run tests via CLI (Newman)
+### Run via Newman (CLI)
 
 ```bash
 npm install -g newman
@@ -127,7 +122,7 @@ DEFAULT_SUMMARY_LANG=en
 
 ---
 
-## 🖥 Development – Frontend (mock client)
+## 🖥 Frontend (Mock Client)
 
 ```bash
 npx json-server --watch db.json --port 5050
@@ -137,25 +132,36 @@ Open `client/src/index.html` with Live Server for mock demo.
 
 ---
 
+## 📸 Screenshots & Demo
+
+### Sample `/news` Response
+
+![News Response](docs/news-response.png)
+
+### Postman Tests
+
+![Postman Tests](docs/postman/test-results.png)
+
+### Demo (GIF)
+
+![News + Summarize Demo](./docs/demo.gif)
+
+```markdown
+![Demo](docs/demo.gif)
+```
+
+---
+
 ## 🗺 Roadmap
 
-* ✅ Slice 1: News Feed (no AI)
-* ✅ Slice 2: Summarize API (AI text summarization)
+* ✅ Slice 1: News Feed
+* ✅ Slice 2: Summarize API
 * 🔜 Slice 3: Recommend API
 * 🔜 Slice 4: Local state persistence
 * 🔜 Deployment + CI tests
 
 ---
 
-## 📸 Screenshots
-
-### Sample `/news` response
-![News Response](docs/news-response.png)
-
-### Postman Test Evidence
-![Postman Tests](docs/postman/test-results.png)
-
----
-
 ## 📜 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+MIT License – see [LICENSE](LICENSE) for details.
