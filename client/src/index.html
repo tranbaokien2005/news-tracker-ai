@@ -36,15 +36,20 @@
   </header>
 
   <main class="container">
-    <div id="status" class="status">Loading…</div>
-    <ul id="news-list" class="news"></ul>
-    <div id="paginator" class="pager">
+  <div id="status" class="status">Loading…</div>
+
+  <!-- Header để hiển thị badge + meta -->
+  <div id="listHeader"></div>
+
+  <ul id="news-list" class="news"></ul>
+
+  <div id="paginator" class="pager">
     <button id="prevPage">&larr; Prev</button>
     <span id="pageIndicator">Page 1 / 1</span>
     <button id="nextPage">Next &rarr;</button>
-    </div>
+  </div>
+</main>
 
-  </main>
 
   <template id="item-tpl">
     <li class="card">
