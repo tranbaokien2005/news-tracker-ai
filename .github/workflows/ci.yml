@@ -24,23 +24,31 @@ jobs:
       - name: Start server (mock AI)
         env:
           PORT: 5051
-          AI_PROVIDER: mock            # 👈 quan trọng
+          AI_PROVIDER: mock
           AI_MODEL: gpt-4o-mini
           NEWS_PAGE_SIZE: 30
           NEWS_CACHE_TTL: 300
           SUMMARIZE_CACHE_TTL: 600
         run: |
           nohup npm run server:start > server.log 2>&1 &
-          # đợi health
+          # wait for health (max 30s)
           for i in {1..30}; do
             if curl -fsS http://localhost:5051/api/v1/health >/dev/null; then
-              echo "Server is healthy"; break
+              echo "Server is healthy"; exit 0
             fi
             sleep 1
           done
+          echo "Server failed to become healthy" && cat server.log && exit 1
 
       - name: Run Postman (Newman)
         run: |
           npx newman run docs/postman/news-tracker-ai_collection.json \
             --reporters cli,json \
             --reporter-json-export newman-report.json
+
+      - name: Upload Newman report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-report
+          path: newman-report.json
