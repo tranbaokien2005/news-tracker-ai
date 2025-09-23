@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Prepare .env for CI
+        run: |
+          cp .env.example .env || true
+          # ép dùng mock để không cần khóa OpenAI trong CI
+          echo "AI_PROVIDER=mock" >> .env
+          echo "PORT=5051" >> .env
+          # giá trị mặc định an toàn
+          echo "NEWS_PAGE_SIZE=30" >> .env
+          echo "NEWS_CACHE_TTL=300" >> .env
+          echo "SUMMARIZE_CACHE_TTL=86400" >> .env
+
+      - name: Start server
+        run: |
+          node server/src/index.js &
+          echo $! > server.pid
+
+      - name: Wait until health is up
+        run: |
+          for i in {1..30}; do
+            if curl -sSf http://localhost:5051/api/v1/health > /dev/null; then
+              echo "Server is up"; exit 0;
+            fi
+            echo "Waiting for server..."
+            sleep 2
+          done
+          echo "Server failed to start in time"; exit 1
+
+      - name: Run Postman (Newman) tests
+        run: |
+          npx newman run docs/postman/news-tracker-ai_collection.json \
+            --reporters cli,json \
+            --reporter-json-export newman-report.json
+
+      - name: Upload Newman report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-report
+          path: newman-report.json
+
+      - name: Stop server
+        if: always()
+        run: kill $(cat server.pid) || true
