@@ -1,0 +1,114 @@
+{
+	"id": "f15f5cc8-a913-435d-985d-136004492f3e",
+	"name": "News Tracker AI (Mock)",
+	"timestamp": "2025-09-23T02:50:36.679Z",
+	"collection_id": "38135531-78ca4b03-5958-4ed4-bffa-edb6768027db",
+	"folder_id": 0,
+	"environment_id": "0",
+	"totalPass": 7,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2025-09-23T02:50:36.235Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "53edaa18-33fa-4357-8b22-7695731f450e",
+			"name": "GET /api/v1/news",
+			"url": "http://localhost:5051/api/v1/news?topic=tech&page=1",
+			"time": 3,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is JSON": true,
+				"Response has items array": true,
+				"First item has title": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has items array": {
+					"pass": 1,
+					"fail": 0
+				},
+				"First item has title": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is JSON": true,
+					"Response has items array": true,
+					"First item has title": true
+				}
+			]
+		},
+		{
+			"id": "43fcb565-9f21-40ed-84b7-41e1b6aa1b76",
+			"name": "POST /api/v1/summarize",
+			"url": "http://localhost:5051/api/v1/summarize",
+			"time": 3,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is JSON": true,
+				"Response has summary": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has summary": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is JSON": true,
+					"Response has summary": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 6,
+	"collection": {
+		"requests": [
+			{
+				"id": "53edaa18-33fa-4357-8b22-7695731f450e",
+				"method": "GET"
+			},
+			{
+				"id": "43fcb565-9f21-40ed-84b7-41e1b6aa1b76",
+				"method": "POST"
+			}
+		]
+	}
+}
