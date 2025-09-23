@@ -4,7 +4,8 @@
 [![Express](https://img.shields.io/badge/Express.js-Backend-blue?logo=express)](https://expressjs.com)
 [![Postman](https://img.shields.io/badge/Postman-Collection-orange?logo=postman)](docs/postman/news-tracker-ai_collection.json)
 [![OpenAI](https://img.shields.io/badge/OpenAI-API-black?logo=openai)](https://platform.openai.com)
-[![CI](https://github.com/<username>/news-tracker-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/<username>/news-tracker-ai/actions/workflows/ci.yml)
+[![CI](https://github.com/tranbaokien2005/news-tracker-ai/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/tranbaokien2005/news-tracker-ai/actions/workflows/ci.yml)
+
 
 ## 📌 Introduction
 
