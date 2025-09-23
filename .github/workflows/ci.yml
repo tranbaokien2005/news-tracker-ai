@@ -2,39 +2,50 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main" ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      # cấu hình server dùng mock, không cần key thật
+      PORT: 5051
+      NEWS_PAGE_SIZE: 30
+      NEWS_CACHE_TTL: 300
+      AI_PROVIDER: mock
+      AI_MODEL: gpt-4o-mini
+      AI_API_KEY: dummy # tránh code crash nếu có check biến
+
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install deps
+        run: npm ci
 
-      # ⚡️ Start server in background
-      - name: Start server
+      - name: Start server (bg)
         run: |
-          npm run server:dev &
-          sleep 5  # đợi server khởi động
+          npm run server:start &
+      
+      - name: Wait for server
+        run: npx wait-on http://localhost:5051/api/v1/health
 
-      - name: Run Postman tests
+      - name: Run Postman (Newman)
         run: |
           npx newman run docs/postman/news-tracker-ai_collection.json \
             --reporters cli,json \
             --reporter-json-export newman-report.json
 
-      - name: Upload test report
+      - name: Upload Newman report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: newman-report
