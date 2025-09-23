@@ -1,52 +1,46 @@
+# .github/workflows/ci.yml
 name: CI
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
+    branches: [ "main" ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    env:
-      # cấu hình server dùng mock, không cần key thật
-      PORT: 5051
-      NEWS_PAGE_SIZE: 30
-      NEWS_CACHE_TTL: 300
-      AI_PROVIDER: mock
-      AI_MODEL: gpt-4o-mini
-      AI_API_KEY: dummy # tránh code crash nếu có check biến
-
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
 
-      - name: Install deps
+      - name: Install dependencies
         run: npm ci
 
-      - name: Start server (bg)
+      - name: Start server (mock AI)
+        env:
+          PORT: 5051
+          AI_PROVIDER: mock            # 👈 quan trọng
+          AI_MODEL: gpt-4o-mini
+          NEWS_PAGE_SIZE: 30
+          NEWS_CACHE_TTL: 300
+          SUMMARIZE_CACHE_TTL: 600
         run: |
-          npm run server:start &
-      
-      - name: Wait for server
-        run: npx wait-on http://localhost:5051/api/v1/health
+          nohup npm run server:start > server.log 2>&1 &
+          # đợi health
+          for i in {1..30}; do
+            if curl -fsS http://localhost:5051/api/v1/health >/dev/null; then
+              echo "Server is healthy"; break
+            fi
+            sleep 1
+          done
 
       - name: Run Postman (Newman)
         run: |
           npx newman run docs/postman/news-tracker-ai_collection.json \
             --reporters cli,json \
             --reporter-json-export newman-report.json
-
-      - name: Upload Newman report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: newman-report
-          path: newman-report.json
