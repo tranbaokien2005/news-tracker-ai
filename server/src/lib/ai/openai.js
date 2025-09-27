@@ -1,4 +1,3 @@
-// server/src/lib/ai/openai.js
 import OpenAI from "openai";
 
 /**

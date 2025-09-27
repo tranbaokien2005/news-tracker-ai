@@ -1,7 +1,3 @@
-Here’s your **API Contract v1** rewritten fully in English with a clear table-like structure:
-
----
-
 # API Contract v1
 
 **Base URL (dev):** `http://localhost:5051/api/v1`

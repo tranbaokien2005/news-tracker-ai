@@ -5,8 +5,10 @@
   "type": "module",
   "main": "server/src/index.js",
   "scripts": {
-    "server:start": "node server/src/index.js",
-    "server:dev": "nodemon server/src/index.js",
+    "server:dev": "nodemon --exec \"node -r dotenv/config server/src/index.js\"",
+
+    "server:start": "cross-env NODE_ENV=production dotenv -e server/.env.production -- node server/src/index.js",
+
     "test:postman": "newman run docs/postman/news-tracker-ai_collection.json --reporters cli,json --reporter-json-export docs/postman/news-tracker-ai_newman_result.ci.json"
   },
   "dependencies": {
@@ -19,7 +21,9 @@
     "rss-parser": "^3.13.0"
   },
   "devDependencies": {
+    "cross-env": "^10.0.0",
     "nodemon": "^3.1.10",
-    "wait-on": "^7.2.0"
+    "wait-on": "^7.2.0",
+    "dotenv-cli": "^7.4.1"
   }
 }

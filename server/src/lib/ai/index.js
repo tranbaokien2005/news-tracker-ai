@@ -1,19 +1,51 @@
+// server/src/lib/ai/index.js
 import { openaiSummarize } from "./openai.js";
 
 /**
- * Adapter theo provider. Hiện hỗ trợ 'openai'.
- * Trả về { content, usage }.
+ * Quyết định provider:
+ * - Ưu tiên AI_PROVIDER (openai|mock)
+ * - Nếu không set, có OPENAI_API_KEY/AI_API_KEY thì dùng openai, ngược lại mock
  */
-export async function summarizeWithAI(opts) {
-  const provider = (process.env.AI_PROVIDER || "openai").toLowerCase();
+function decideProvider() {
+  const p = (process.env.AI_PROVIDER || "").toLowerCase();
+  if (p) return p;
+  return (process.env.OPENAI_API_KEY || process.env.AI_API_KEY) ? "openai" : "mock";
+}
 
-  switch (provider) {
-    case "openai":
-      return openaiSummarize(opts);
-    default: {
-      const err = new Error(`Unsupported AI_PROVIDER: ${provider}`);
-      err.status = 502;
-      throw err;
-    }
+/**
+ * Chuẩn hoá output cho FE (content + usage + provider)
+ */
+export async function summarizeWithAI(opts = {}) {
+  const provider = decideProvider();
+  console.log("[summarizeWithAI] provider =", provider);
+  const { text = "", mode = "bullets", lang = "en", title, topic, model } = opts;
+
+  if (!text || !String(text).trim()) {
+    const err = new Error("Missing text");
+    err.status = 400;
+    err.code = "INVALID_INPUT";
+    throw err;
   }
+
+  if (provider === "openai") {
+    const { content, usage } = await openaiSummarize({
+      text: String(text),
+      lang,
+      mode,
+      model,
+      title,
+      topic,
+    });
+    return { content, usage, provider: "openai" };
+  }
+
+  // ---- MOCK: tạo output dựa trên text để mỗi bài khác nhau ----
+  const sentences = String(text)
+    .split(/(?<=[.!?])\s+/)
+    .map(s => s.trim())
+    .filter(Boolean)
+    .slice(0, 5);
+
+  const content = mode === "bullets" ? sentences : sentences.join(" ");
+  return { content, usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 }, provider: "mock" };
 }
