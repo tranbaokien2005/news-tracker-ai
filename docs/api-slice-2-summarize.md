@@ -1,50 +1,49 @@
-# Slice 2 – Summarize (MVP)
+---
 
-**Base URL (dev):** `http://localhost:5051/api/v1`  
-**Auth:** Không yêu cầu  
+# Slice 2 – Summarize (MVP, normalized)
+
+**Base URL (dev):** `http://localhost:5051/api/v1`
+**Auth:** None
 **Content-Type:** `application/json`
 
----
+## POST `/summarize`
 
-## Endpoint
+**Purpose**
+Generate an AI summary. **MVP accepts raw `text`** (server does not fetch URL content).
 
-### POST `/summarize`
-
-**Purpose**  
-Sinh tóm tắt bài báo bằng AI. MVP nhận **text** đã được trích sẵn (không tự fetch từ URL).
-
----
-
-## Request Body (MVP)
+### Request Body (MVP)
 
 ```json
 {
-  "text": "Nội dung bài báo cần tóm tắt...",
-  "lang": "en",             // optional: "auto" | "en" | "vi" | ...
-  "mode": "bullets",        // optional: "bullets" | "paragraph"
-  "title": "Apple unveils...", // optional: hỗ trợ giữ ngữ cảnh
-  "topic": "tech"              // optional: gợi ý phong cách tóm tắt
+  "text": "Article text to summarize...",
+  "url": "https://source-article.example.com",   // optional (for reference/attribution)
+  "title": "Apple unveils ...",                   // optional (helps context)
+  "lang": "en",                                   // optional: "auto" | "en" | "vi" | ...
+  "mode": "bullets",                              // optional: "bullets" | "paragraph"
+  "topic": "tech"                                 // optional: may guide style
 }
-````
+```
 
-### Ràng buộc
+**Constraints**
 
-* `text` **bắt buộc**, string non-empty.
-* Giới hạn độ dài: `MAX_SUMMARY_INPUT_CHARS` (ENV, mặc định 8000).
-* `mode` mặc định = `"bullets"`.
-* `lang` mặc định = `"en"` (hoặc `"auto"` nếu cấu hình).
+* `text`: **required**, non-empty
+* Max length: `MAX_SUMMARY_INPUT_CHARS` (ENV, default 8000)
+* Defaults: `mode="bullets"`, `lang="en"` (or `"auto"` if enabled)
 
----
-
-## Response 200
+### 200 Response (aligned with FE `Summary` type)
 
 ```json
 {
-  "summary": "• Apple launched a new AI-accelerated chip...\n• ...",
-  "mode": "bullets",
+  "summary": {
+    "mode": "bullets",
+    "items": [
+      "Apple launched a new AI-accelerated chip...",
+      "The chip integrates on-device LLM optimizations..."
+    ]
+  },
   "lang": "en",
   "model": "gpt-4o-mini",
-  "cached": false,
+  "cacheStatus": "live",
   "cache_ttl": 600,
   "usage": {
     "prompt_tokens": 0,
@@ -52,73 +51,65 @@ Sinh tóm tắt bài báo bằng AI. MVP nhận **text** đã được trích s�
     "total_tokens": 0
   },
   "meta": {
-    "hash": "sha256-of-text",
+    "hash": "sha256-of-normalized-text",
     "provider": "openai",
     "elapsed_ms": 123
   }
 }
 ```
 
----
+> If `mode="paragraph"`, return:
+>
+> ```json
+> { "summary": { "mode": "paragraph", "text": "Short paragraph..." } }
+> ```
 
-## Error Responses
+### Errors
 
-* **400 INVALID\_INPUT**
+**400 INVALID_INPUT**
 
-  ```json
-  { "error": "INVALID_INPUT", "message": "Field 'text' is required." }
-  ```
-
-* **413 INPUT\_TOO\_LARGE**
-
-  ```json
-  { "error": "INPUT_TOO_LARGE", "message": "Text exceeds MAX_SUMMARY_INPUT_CHARS." }
-  ```
-
-* **429 RATE\_LIMITED**
-
-  ```json
-  { "error": "RATE_LIMITED", "message": "Too many requests, please try later." }
-  ```
-
-* **502 AI\_PROVIDER\_ERROR**
-
-  ```json
-  { "error": "AI_PROVIDER_ERROR", "message": "Failed to generate summary." }
-  ```
-
----
-
-## Caching
-
-* **Cache key**:
-
-  ```
-  sum:{model}:{lang}:{mode}:{sha256(normalized_text)}
-  ```
-* **TTL**: `SUMMARIZE_CACHE_TTL` (ENV, mặc định 600s).
-* **Normalize**: collapse whitespace, trim, slice tới `MAX_SUMMARY_INPUT_CHARS`.
-
----
-
-## Rate Limiting
-
-* Config qua ENV:
-
-  * `AI_RATE_MAX` (mặc định 5)
-  * `AI_RATE_WINDOW_MS` (mặc định 60000ms = 1 phút)
-* Trả về headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After`.
-
----
-
-## Notes
-
-* MVP: chỉ nhận `text`.
-* Fast-follow: hỗ trợ `{ "url": "..." }` để server fetch và extract.
-* Ngôn ngữ: auto-detect nếu `lang=auto`.
-* Style:
-
-  * `bullets`: 3–5 bullet, ≤80 words.
-  * `paragraph`: 1 đoạn ngắn, 80–120 words.
-
+```json
+{ "error": "INVALID_INPUT", "message": "Field 'text' is required." }
 ```
+
+**413 INPUT_TOO_LARGE**
+
+````json
+{ "error": "INPUT_TOO_LARGE", "message": "Text exceeds MAX_SUMMARY_INPUT_CHARS." }
+``>
+**429 RATE_LIMITED**
+```json
+{ "error": "RATE_LIMITED", "message": "Too many requests, please try later." }
+````
+
+**502 AI_PROVIDER_ERROR**
+
+```json
+{ "error": "AI_PROVIDER_ERROR", "message": "Failed to generate summary." }
+```
+
+### Caching
+
+* **Key:** `sum:{model}:{lang}:{mode}:{sha256(normalized_text)}`
+* **TTL:** `SUMMARIZE_CACHE_TTL` seconds
+* **Normalize:** collapse whitespace, trim, slice to `MAX_SUMMARY_INPUT_CHARS`
+
+### Rate Limiting
+
+* ENV:
+
+  * `AI_RATE_MAX` (default 5)
+  * `AI_RATE_WINDOW_MS` (default 60000)
+* Return headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After`
+
+---
+
+## Why these changes?
+
+* **One response shape** across FE/BE:
+
+  * `/news`: `{ page, pages, items, cacheStatus, data }`
+  * Articles: `{ excerpt, image }` (no `snippet`)
+* **`/summarize` matches FE types**: `summary` is an **object** with `{mode, items|text}`.
+* **`cacheStatus: 'cached' | 'live'`** used everywhere (instead of boolean `cache` or `"hit"/"miss"`).
+* **Optional `url`** accepted by `/summarize` (FE is already sending it).

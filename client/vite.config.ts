@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
     ],
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "src"), // không cần "./src"
+        "@": path.resolve(__dirname, "src"),
       },
     },
   };

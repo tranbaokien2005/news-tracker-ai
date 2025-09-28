@@ -1,32 +1,32 @@
-// Một bài báo cơ bản
+// A basic article object
 export type Article = {
   id: string;
   title: string;
   url: string;
   source: string;
-  publishedAt: string; // ISO
+  publishedAt: string; // ISO date string
   excerpt: string;
   image?: string;
 };
 
-// Dạng summary (AI tóm tắt)
+// AI-generated summary format
 export type Summary =
   | { mode: 'bullets'; items: string[] }
   | { mode: 'paragraph'; text: string };
 
-// Bài báo kèm summary
+// Article extended with optional summary data
 export type ArticleWithSummary = Article & {
   summary?: Summary;
   summaryExpanded?: boolean;
 };
 
-// Chủ đề (topic)
+// Supported topics
 export type Topic = 'tech' | 'finance' | 'world';
 
-// Trạng thái app
+// High-level app state for rendering
 export type AppState = 'loading' | 'loaded' | 'empty' | 'error';
 
-// Toast UI
+// Toast notification types
 export type ToastType = 'info' | 'success' | 'error' | 'warning';
 export type Toast = {
   id: string;
@@ -36,7 +36,7 @@ export type Toast = {
   duration?: number;
 };
 
-// FE status (tính toán client-side khi render)
+// Client-side computed status data (for UI display)
 export type StatusData = {
   cached: number;
   fresh: number;
@@ -45,26 +45,26 @@ export type StatusData = {
   totalItems: number;
 };
 
-// ✅ Response từ API /news (đã sửa)
+// ✅ Response from /news API (normalized shape)
 export type NewsResponse = {
   page: number;
   pages: number;
   items: number;
-  cacheStatus: 'cached' | 'live'; // <-- thay vì `cache: boolean`
+  cacheStatus: 'cached' | 'live';
   data: Article[];
 };
 
-// Mode summary
+// Summary modes
 export type SummaryMode = 'bullets' | 'paragraph';
 
-// Request body cho /summarize
+// Request body for /summarize API
 export type SummarizeRequest = {
   articleId: string;
   text: string;
   mode?: SummaryMode;
 };
 
-// Response từ API /summarize
+// Response from /summarize API
 export type SummarizeResponse = {
   summary: Summary;
 };

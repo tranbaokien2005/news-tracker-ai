@@ -1,4 +1,4 @@
-# 📖 News Tracker AI
+# News Tracker AI
 
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js)](https://nodejs.org)
 [![Express](https://img.shields.io/badge/Express.js-Backend-blue?logo=express)](https://expressjs.com)
@@ -7,7 +7,7 @@
 [![CI](https://github.com/tranbaokien2005/news-tracker-ai/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/tranbaokien2005/news-tracker-ai/actions/workflows/ci.yml)
 
 
-## 📌 Introduction
+## Introduction
 
 **News Tracker AI** is a backend showcase project built with **Node.js + Express**, designed to:
 
@@ -15,28 +15,28 @@
 * Apply caching & pagination for efficiency.
 * Integrate **AI-powered summarization** (done) and recommendations (planned).
 
-👉 This project is part of a **personal portfolio**.
+This project is part of a **personal portfolio**.
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
-* [🚀 Getting Started](#-getting-started)
-* [📂 Project Structure](#-project-structure)
-* [📡 API Endpoints](#-api-endpoints)
-* [📝 API Contract](#-api-contract)
-* [🧪 Testing](#-testing)
-* [⚙️ Environment Variables](#️-environment-variables)
-* [🖥 Frontend (Mock Client)](#-frontend-mock-client)
-* [📸 Screenshots & Demo](#-screenshots--demo)
-* [🗺 Roadmap](#-roadmap)
-* [📚 Showcase Case Study](#-showcase-case-study)
-* [👤 Author](#-author)
-* [📜 License](#-license)
+* [Getting Started](#getting-started)
+* [Project Structure](#project-structure)
+* [API Endpoints](#api-endpoints)
+* [API Contract](#api-contract)
+* [Testing](#testing)
+* [Environment Variables](#environment-variables)
+* [Frontend (Mock Client)](#frontend-mock-client)
+* [Screenshots & Demo](#screenshots--demo)
+* [Roadmap](#roadmap)
+* [Showcase Case Study](#showcase-case-study)
+* [Author](#author)
+* [License](#license)
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ```bash
 # Clone repo
@@ -61,7 +61,7 @@ http://localhost:5051/api/v1
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 /server        → Express backend
@@ -72,34 +72,34 @@ http://localhost:5051/api/v1
 
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
-### Slice 1 – News Feed (✅ Done)
+### Slice 1 – News Feed 
 
 * `GET /api/v1/health`
 * `GET /api/v1/news?topic=tech&page=1[&forceRefresh=1]`
-  ➡️ Details: [`docs/api-slice-1-news.md`](docs/api-slice-1-news.md)
+  Details: [`docs/api-slice-1-news.md`](docs/api-slice-1-news.md)
 
-### Slice 2 – Summarize (✅ Done)
+### Slice 2 – Summarize 
 
 * `POST /api/v1/summarize` → Summarizes input text using AI (with cache + rate limiting).
-  ➡️ Details: [`docs/api-slice-2-summarize.md`](docs/api-slice-2-summarize.md)
+  Details: [`docs/api-slice-2-summarize.md`](docs/api-slice-2-summarize.md)
 
-### Slice 3 – Recommend (🔜 Planned)
+### Slice 3 – Recommend (Planned)
 
 * `POST /api/v1/recommend` → Suggests actions based on summaries.
 
 ---
 
-## 📝 API Contract
+## API Contract
 
 See full spec: [`docs/api-contract.md`](docs/api-contract.md)
 
 ---
 
-## 🧪 Testing
+## Testing
 
-✅ Postman tests included:
+Postman tests included:
 
 * `GET /news` → status, JSON, pagination, cache hit/miss
 * `POST /summarize` → validates summary output
@@ -120,7 +120,7 @@ newman run docs/postman/news-tracker-ai_collection.json \
 
 ---
 
-## ⚙️ Environment Variables
+## Environment Variables
 
 ```env
 PORT=5051
@@ -141,7 +141,7 @@ DEFAULT_SUMMARY_LANG=en
 
 ---
 
-## 🖥 Frontend (Mock Client)
+## Frontend (Mock Client)
 
 ```bash
 npx json-server --watch db.json --port 5050
@@ -151,7 +151,7 @@ Open `client/src/index.html` with Live Server for mock demo.
 
 ---
 
-## 📸 Screenshots & Demo
+## Screenshots & Demo
 
 ### Sample `/news` Response
 
@@ -167,33 +167,32 @@ Open `client/src/index.html` with Live Server for mock demo.
 
 ---
 
-## 🗺 Roadmap
+## Roadmap
 
-* ✅ Slice 1: News Feed
-* ✅ Slice 2: Summarize API
-* 🔜 Slice 3: Recommend API
-* 🔜 Slice 4: Local state persistence
-* 🔜 Deployment + CI tests
-
+* Slice 1: News Feed
+* Slice 2: Summarize API
+* Slice 3: Recommend API (planned)
+* Slice 4: Local state persistence (planned)
 ---
 
-## 📚 Showcase Case Study
+## Showcase Case Study
 
 Detailed explanation:
 [Why Cache and Rate-Limit Matter (Case Study)](docs/showcase-cache-rate-limit.md)
 
 ---
 
-## 👤 Author
+## Author
 
 * **Name**: Tran Bao Kien
-* **GitHub**: [tranbaokien2005](https://github.com/tranbaokien2005)
-* **LinkedIn**: *\[add-your-linkedin-here]*
-* **Email**: *\[[your-email@example.com](mailto:your-email@example.com)]*
+* **GitHub**: [tranbaokien2005](https://github.com/tranbaokien2005)  
+* **LinkedIn**: [linkedin.com/in/tranbaokien2005](https://www.linkedin.com/in/tranbaokien2005)  
+* **Email**: [tranbaokien.2005@gmail.com](mailto:tranbaokien.2005@gmail.com)  
+
 
 ---
 
-## 📜 License
+## License
 
 MIT License – see [LICENSE](LICENSE) for details.
 

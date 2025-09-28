@@ -1,5 +1,3 @@
-# API Contract v1
-
 **Base URL (dev):** `http://localhost:5051/api/v1`
 
 ### Common Headers
@@ -12,60 +10,47 @@
 
 ---
 
-## Slice 1 – News Feed (✅ Implemented)
+## Endpoints
 
-### **GET `/health`**
+### GET `/health`
 
-**Purpose:** Check API status
-**Response Example:**
+**Purpose:** Health check
+
+**200 Example**
 
 ```json
-{
-  "ok": true,
-  "version": "v1"
-}
+{ "ok": true, "version": "v1" }
 ```
 
-### **GET `/news`**
+---
 
-**Purpose:** Retrieve a list of news articles by topic.
-➡️ See details: `api-slice-1-news.md`
+### GET `/news`
+
+**Purpose:** Retrieve a list of news articles by topic (normalized from multiple RSS).
+**Docs:** see **Slice 1 – News Feed**
 
 ---
 
-## Slice 2 – Summarize (🔜 Planned – MVP accepts raw text)
+### POST `/summarize`
 
-### **POST `/summarize`**
-
-**Purpose:** Generate a summary using AI.
-➡️ See details: `api-slice-2-summarize.md`
+**Purpose:** Generate an AI summary for provided text.
+**Docs:** see **Slice 2 – Summarize**
 
 ---
 
-## Slice 3 – Recommend (🔜 Planned)
+### POST `/recommend` (planned)
 
-### **POST `/recommend`**
-
-**Purpose:** Suggest actions based on a given summary.
-➡️ See details: `api-slice-3-recommend.md`
+**Purpose:** Suggest actions based on a given summary (future slice).
 
 ---
 
 ## General Implementation Notes
 
-* **Pagination**: 30 items per page (configurable via `NEWS_PAGE_SIZE`).
-* **Caching**:
+* **Pagination**: 30 items/page (ENV `NEWS_PAGE_SIZE`)
+* **Caching**
 
-  * `/news`: cached per `topic` (TTL = `NEWS_CACHE_TTL`, default \~300s).
-  * `/summarize`: cached by **hash(text + params)** (TTL = `SUMMARIZE_CACHE_TTL`, default \~600s).
-* **CORS**: After deployment, only allow valid frontend origins.
-* **Logging**: Log server errors, `cache: hit/miss`, `elapsed_ms` for summarize.
-* **Versioning**: Prefix `/api/v1` to prevent breaking changes during upgrades.
-
----
-
-## Sample Data (for FE Mocking)
-
-* `mock/news-tech.json` → sample response for `GET /news?topic=tech`
-* `mock/summarize.json` → sample response for `POST /summarize`
-* `mock/recommend.json` → sample response for `POST /recommend`
+  * `/news`: cached per `topic` (TTL = `NEWS_CACHE_TTL`, default ~300s)
+  * `/summarize`: cached by `sha256(text + params)` (TTL = `SUMMARIZE_CACHE_TTL`, default ~600s)
+* **CORS**: lock to production frontend origins after deploy
+* **Logging**: include `cacheStatus` (`cached|live`) and `elapsed_ms` where sensible
+* **Versioning**: prefix `/api/v1`
