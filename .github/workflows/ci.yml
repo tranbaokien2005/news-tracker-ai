@@ -8,6 +8,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      CI: true
 
     steps:
       - name: Checkout repository
@@ -17,9 +20,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: npm
 
-      - name: Install dependencies
+      # Nếu backend có package.json riêng ở /server, giữ bước này
+      - name: Install root deps
         run: npm ci
+
+      # (Tùy chọn) Nếu server có package.json riêng:
+      # - name: Install server deps
+      #   run: npm ci
+      #   working-directory: server
 
       - name: Start server (mock AI)
         env:
@@ -31,14 +41,15 @@ jobs:
           SUMMARIZE_CACHE_TTL: 600
         run: |
           nohup npm run server:start > server.log 2>&1 &
-          # wait for health (max 30s)
           for i in {1..30}; do
             if curl -fsS http://localhost:5051/api/v1/health >/dev/null; then
-              echo "Server is healthy"; exit 0
+              echo "Server is healthy"
+              break
             fi
             sleep 1
           done
-          echo "Server failed to become healthy" && cat server.log && exit 1
+          # Kiểm tra lại 1 lần, nếu vẫn lỗi in log rồi fail
+          curl -fsS http://localhost:5051/api/v1/health >/dev/null || { echo "Server failed to become healthy"; cat server.log; exit 1; }
 
       - name: Run Postman (Newman)
         run: |
@@ -52,3 +63,10 @@ jobs:
         with:
           name: newman-report
           path: newman-report.json
+
+      - name: Upload server log (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-log
+          path: server.log
