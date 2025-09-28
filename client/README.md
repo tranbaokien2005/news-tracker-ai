@@ -1,4 +1,4 @@
-# 📰 News Tracker AI – Frontend (Client)
+# News Tracker AI – Frontend (Client)
 
 [![React](https://img.shields.io/badge/React-18-blue?logo=react)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-Build-FDDB21?logo=vite)](https://vitejs.dev/)
@@ -10,7 +10,7 @@ This project demonstrates a complete UI layout for a news tracking application w
 
 ---
 
-## ✨ Features
+## Features
 
 - **Dark Theme Design**: Beautiful dark mode interface with custom color palette
 - **Responsive Layout**: Mobile-first design with sidebar on desktop
@@ -22,7 +22,7 @@ This project demonstrates a complete UI layout for a news tracking application w
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Install dependencies
@@ -32,11 +32,11 @@ npm install
 npm run dev
 
 The application will be available at:
-👉 `http://localhost:5173` (Vite default port)
+`http://localhost:5173` (Vite default port)
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 src/
@@ -59,7 +59,7 @@ src/
 
 ---
 
-## 🎨 Design System
+## Design System
 
 The project uses a comprehensive design system with:
 
@@ -71,7 +71,7 @@ The project uses a comprehensive design system with:
 
 ---
 
-## 🖥️ UI States Demonstration
+## UI States Demonstration
 
 The app includes debug controls to showcase different states:
 
@@ -82,7 +82,7 @@ The app includes debug controls to showcase different states:
 
 ---
 
-## 🔗 Interactive Features
+## Interactive Features
 
 * Topic switching (Tech / Finance / World)
 * Article summarization with AI-powered insights
@@ -93,7 +93,7 @@ The app includes debug controls to showcase different states:
 
 ---
 
-## 🛠️ Technologies Used
+## Technologies Used
 
 * **React 18** with TypeScript
 * **Tailwind CSS** for styling
@@ -103,7 +103,7 @@ The app includes debug controls to showcase different states:
 
 ---
 
-## 📊 Mock Data
+## Mock Data
 
 The application includes realistic mock data featuring:
 
@@ -114,18 +114,18 @@ The application includes realistic mock data featuring:
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 * [UI Spec v1 – Final](../docs/UI-Spec-v1.md)
 
 ---
 
-## 🌐 Live Demo
+## Live Demo
 
-👉 [View Demo on Vercel](https://your-vercel-deployment-url.vercel.app) *(add link after deployment)*
+[View Demo on Vercel](https://your-vercel-deployment-url.vercel.app) *(add link after deployment)*
 
 ---
 
-## ❤️ Credits
+## Credits
 
 Made with ❤️ by **Kien**

@@ -1,11 +1,11 @@
-# 📊 Showcase Case Study: Why Cache and Rate-Limit
+# Showcase Case Study: Why Cache and Rate-Limit
 
 In real-world API design, **performance** and **stability** are just as important as returning correct data.  
 This case study highlights why we added **caching** and **rate-limiting** to News Tracker AI.
 
 ---
 
-## ⚡ Caching
+## Caching
 
 **Problem**  
 - Repeatedly fetching RSS feeds or re-calling AI summarization wastes time and resources.  
@@ -22,7 +22,7 @@ This case study highlights why we added **caching** and **rate-limiting** to New
 
 ---
 
-## 🛡️ Rate-Limiting
+## Rate-Limiting
 
 **Problem**  
 - Public APIs can be abused with spam or heavy requests.  
@@ -39,7 +39,7 @@ This case study highlights why we added **caching** and **rate-limiting** to New
 
 ---
 
-## ✅ Outcome
+## Outcome
 
 By combining **caching** + **rate-limiting**:  
 - The API is **fast** (cached responses).  
