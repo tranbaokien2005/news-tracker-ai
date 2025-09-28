@@ -1,7 +1,3 @@
----
-
-# Slice 2 – Summarize (MVP, normalized)
-
 **Base URL (dev):** `http://localhost:5051/api/v1`
 **Auth:** None
 **Content-Type:** `application/json`
