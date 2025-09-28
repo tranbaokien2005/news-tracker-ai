@@ -1,6 +1,7 @@
 // client/src/pages/Index.tsx
 import { useEffect, useMemo, useState } from 'react';
 import { AlertCircle, RefreshCw, FileX } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import type {
   Topic,
@@ -13,7 +14,8 @@ import type {
 
 import Header from '@/components/Header';
 import StatusBar, { UIStatus } from '@/components/StatusBar';
-import Sidebar from '@/components/Sidebar';
+// 👉 Make sure this path matches your actual file location
+import Sidebar, { SourceId, TimeRange } from '@/components/Sidebar';
 import ArticleCard from '@/components/ArticleCard';
 import SkeletonCard from '@/components/SkeletonCard';
 import Pagination from '@/components/Pagination';
@@ -54,7 +56,14 @@ function buildSummaryText(a: any): string {
 // Show StatusBar
 const SHOW_STATUS = import.meta.env.DEV || import.meta.env.VITE_SHOW_STATUS === '1';
 
+/** Filter state type kept in the page (MVP) */
+type Filters = { sources: SourceId[]; timeRange: TimeRange };
+
 const Index = () => {
+  // --------- Routing helpers (for querystring sync) ---------
+  const location = useLocation();
+  const navigate = useNavigate();
+
   // --------- State ---------
   const [selectedTopic, setSelectedTopic] = useState<Topic>(DEFAULT_TOPIC);
   const [appState, setAppState] = useState<AppState>('loading');
@@ -74,6 +83,17 @@ const Index = () => {
   // Last successful refresh time
   const [lastUpdated, setLastUpdated] = useState<number>(Date.now());
 
+  // --------- Filters (own the state here; pass down to Sidebar) ---------
+  // Initialize from URL querystring so a refresh keeps the same filters
+  const initFiltersFromQS = (): Filters => {
+    const qs = new URLSearchParams(location.search);
+    const src = (qs.getAll('src') as SourceId[]) || [];
+    const tr = (qs.get('tr') as TimeRange) || '6h';
+    // Provide a sensible default when nothing in URL
+    return { sources: src.length ? src : ['theverge'], timeRange: tr };
+  };
+  const [filters, setFilters] = useState<Filters>(initFiltersFromQS);
+
   // --------- Derived UI status ---------
   const status: UIStatus = useMemo(() => {
     const cached = cacheFlag ? totalItems : 0;
@@ -82,10 +102,20 @@ const Index = () => {
   }, [cacheFlag, currentPage, totalItems, totalPages, lastUpdated]);
 
   // --------- Effects ---------
+  // Load articles whenever topic/page/filters change.
   useEffect(() => {
+    // Sync querystring with current filters + page
+    const qs = new URLSearchParams();
+    filters.sources.forEach((s) => qs.append('src', s));
+    qs.set('tr', filters.timeRange);
+    qs.set('page', String(currentPage));
+    navigate({ pathname: '/', search: qs.toString() }, { replace: true });
+
+    // NOTE (MVP): backend fetchNews(topic, page, PAGE_SIZE) might not accept filters yet.
+    // We still update UI state + URL now; later extend API to accept {sources, timeRange}.
     void loadArticles(selectedTopic, currentPage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTopic, currentPage]);
+  }, [selectedTopic, currentPage, filters]);
 
   // --------- Actions ---------
   const loadArticles = async (topic: Topic, page: number) => {
@@ -183,6 +213,7 @@ const Index = () => {
     }
   };
 
+  // MVP bookmark/share (kept as simple toasts)
   const handleBookmark = (articleId: string) => {
     addToast({ type: 'info', title: 'Bookmarked', message: 'Article saved to your reading list' });
   };
@@ -287,12 +318,24 @@ const Index = () => {
         isLoading={isReloading}
       />
 
-      {SHOW_STATUS && (
-        <StatusBar status={status} variant={import.meta.env.DEV ? 'dev' : 'prod'} />
-      )}
+      {SHOW_STATUS && <StatusBar status={status} variant={import.meta.env.DEV ? 'dev' : 'prod'} />}
 
       <div className="flex">
-        <Sidebar className="hidden lg:flex flex-shrink-0" />
+        <Sidebar
+          className="hidden lg:flex flex-shrink-0"
+          selectedSources={filters.sources}
+          timeRange={filters.timeRange}
+          counts={{ theverge: 45, hackernews: 32, bbc: 28, techcrunch: 19 }} // TODO: wire real counts
+          onToggleSource={(id) =>
+            setFilters((f) => ({
+              ...f,
+              sources: f.sources.includes(id) ? f.sources.filter((x) => x !== id) : [...f.sources, id],
+            }))
+          }
+          onChangeTime={(tr) => setFilters((f) => ({ ...f, timeRange: tr }))}
+          disabled={true} // Set to true if you want to freeze the panel for MVP deploy
+        />
+
         <main className="flex-1 p-6">
           <div className="container mx-auto max-w-7xl">
             {/* Debug controls */}
