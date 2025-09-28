@@ -3,16 +3,17 @@ import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 
 const aiRateLimit = rateLimit({
   windowMs: Number(process.env.AI_RATE_WINDOW_MS || 60_000),
-  // v7+ dùng 'limit' (không phải 'max')
+  // v7+ uses `limit` (not `max`)
   limit: Number(process.env.AI_RATE_MAX || 5),
 
-  // headers chuẩn
+  // Send standard rate-limit headers
   standardHeaders: "draft-7",
   legacyHeaders: false,
 
-  // ✅ BẮT BUỘC: sinh key hợp lệ cho IPv4/IPv6
+  // Required: generate valid keys for both IPv4 and IPv6
   keyGenerator: ipKeyGenerator(),
 
+  // Custom handler for blocked requests
   handler: (_req, res) => {
     res.status(429).json({
       error: "RATE_LIMITED",
@@ -21,4 +22,4 @@ const aiRateLimit = rateLimit({
   },
 });
 
-export default aiRateLimit;
+export default aiRateLimit

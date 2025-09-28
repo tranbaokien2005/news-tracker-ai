@@ -7,7 +7,7 @@ const parser = new Parser({
     "User-Agent": process.env.NEWS_UA || "NewsTrackerBot/1.0 (+https://example.com)",
     "Accept": "application/rss+xml, application/xml, text/xml, */*",
   },
-  // Lấy thêm field phổ biến
+  // Extract a few common extra fields
   customFields: {
     item: [
       ["content:encoded", "contentEncoded"],
@@ -18,7 +18,7 @@ const parser = new Parser({
 });
 
 function parseDateSafe(d) {
-  // d có thể là isoDate, pubDate, hay rỗng
+  // d can be isoDate, pubDate, or empty
   const s = (d || "").toString().trim();
   const t = s ? Date.parse(s) : NaN;
   return Number.isFinite(t) ? new Date(t).toISOString() : new Date().toISOString();
@@ -29,9 +29,13 @@ function stripHtml(s = "") {
 }
 
 function firstImage(item) {
-  // ưu tiên media:content, thumbnail, enclosure, rồi fallback quét từ content
-  const media = item.mediaContent?.[0]?.$.url || item.mediaThumb?.[0]?.$.url || item.enclosure?.url;
+  // Priority: media:content → media:thumbnail → enclosure → scan from content
+  const media =
+    item.mediaContent?.[0]?.$.url ||
+    item.mediaThumb?.[0]?.$.url ||
+    item.enclosure?.url;
   if (media) return media;
+
   const html = item.contentEncoded || item.content || "";
   const m = html && html.match(/<img[^>]+src=["']([^"']+)["']/i);
   return m ? m[1] : null;
@@ -40,8 +44,9 @@ function firstImage(item) {
 function normalizeUrl(u) {
   try {
     const url = new URL(u);
-    // bỏ các tham số tracking phổ biến
-    ["utm_source","utm_medium","utm_campaign","utm_term","utm_content","fbclid","gclid","yclid"].forEach(k => url.searchParams.delete(k));
+    // Remove common tracking params
+    ["utm_source","utm_medium","utm_campaign","utm_term","utm_content","fbclid","gclid","yclid"]
+      .forEach(k => url.searchParams.delete(k));
     return url.toString();
   } catch {
     return u || null;
@@ -117,7 +122,7 @@ export async function fetchTopicFeed(topic, sources, { maxPerSource = 30 } = {})
 
   const blocks = await Promise.all(tasks);
 
-  // dedupe chắc tay theo canonicalKey
+  // Strong dedupe by canonical key
   const seen = new Set();
   const merged = [];
   for (const it of blocks.flat()) {
@@ -127,7 +132,7 @@ export async function fetchTopicFeed(topic, sources, { maxPerSource = 30 } = {})
     merged.push(it);
   }
 
-  // sort mới → cũ
+  // Sort newest → oldest
   merged.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
   return merged;
 }

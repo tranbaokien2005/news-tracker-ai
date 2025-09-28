@@ -22,11 +22,11 @@ jobs:
           node-version: 18
           cache: npm
 
-      # Nếu backend có package.json riêng ở /server, giữ bước này
+      # Install root-level dependencies
       - name: Install root deps
         run: npm ci
 
-      # (Tùy chọn) Nếu server có package.json riêng:
+      # (Optional) If backend has a separate package.json in /server, enable this step
       # - name: Install server deps
       #   run: npm ci
       #   working-directory: server
@@ -41,6 +41,7 @@ jobs:
           SUMMARIZE_CACHE_TTL: 600
         run: |
           nohup npm run server:start > server.log 2>&1 &
+          # Wait for server health check (max 30s)
           for i in {1..30}; do
             if curl -fsS http://localhost:5051/api/v1/health >/dev/null; then
               echo "Server is healthy"
@@ -48,7 +49,7 @@ jobs:
             fi
             sleep 1
           done
-          # Kiểm tra lại 1 lần, nếu vẫn lỗi in log rồi fail
+          # Final check, if server is not healthy print logs and exit
           curl -fsS http://localhost:5051/api/v1/health >/dev/null || { echo "Server failed to become healthy"; cat server.log; exit 1; }
 
       - name: Run Postman (Newman)

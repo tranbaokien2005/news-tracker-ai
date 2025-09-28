@@ -2,9 +2,9 @@
 import { openaiSummarize } from "./openai.js";
 
 /**
- * Quyết định provider:
- * - Ưu tiên AI_PROVIDER (openai|mock)
- * - Nếu không set, có OPENAI_API_KEY/AI_API_KEY thì dùng openai, ngược lại mock
+ * Decide which provider to use:
+ * - Priority: AI_PROVIDER (openai | mock)
+ * - If not set: use OpenAI if OPENAI_API_KEY/AI_API_KEY exists, otherwise fallback to mock
  */
 function decideProvider() {
   const p = (process.env.AI_PROVIDER || "").toLowerCase();
@@ -13,7 +13,7 @@ function decideProvider() {
 }
 
 /**
- * Chuẩn hoá output cho FE (content + usage + provider)
+ * Normalize summary output for FE (content + usage + provider)
  */
 export async function summarizeWithAI(opts = {}) {
   const provider = decideProvider();
@@ -39,7 +39,7 @@ export async function summarizeWithAI(opts = {}) {
     return { content, usage, provider: "openai" };
   }
 
-  // ---- MOCK: tạo output dựa trên text để mỗi bài khác nhau ----
+  // ---- MOCK: generate output based on text (ensures variation per input) ----
   const sentences = String(text)
     .split(/(?<=[.!?])\s+/)
     .map(s => s.trim())
@@ -47,5 +47,9 @@ export async function summarizeWithAI(opts = {}) {
     .slice(0, 5);
 
   const content = mode === "bullets" ? sentences : sentences.join(" ");
-  return { content, usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 }, provider: "mock" };
+  return {
+    content,
+    usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+    provider: "mock",
+  };
 }

@@ -91,7 +91,3 @@ router.use("/", summarizeRouter);
 
 export default router;
 
-// (debug tuỳ chọn)
-console.log("TECH:", getSourcesByTopic("tech"));
-console.log("FINANCE:", getSourcesByTopic("finance"));
-console.log("WORLD:", getSourcesByTopic("world"));

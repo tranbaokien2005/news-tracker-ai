@@ -14,54 +14,59 @@ const DEFAULT_SOURCES = {
   ]
 };
 
-
-
-// ENV ví dụ:
-// NEWS_SOURCES=tech:theverge,bbc,hackernews;finance:marketwatch,marketwatch-rt;world:bbc,aljazeera
+/**
+ * Parse sources from ENV string and override defaults when provided.
+ *
+ * ENV example:
+ *   NEWS_SOURCES=tech:theverge,bbc,hackernews;finance:marketwatch,marketwatch-rt;world:bbc,aljazeera
+ *
+ * Resulting shape:
+ *   {
+ *     tech:    [{ name, url }, ...],
+ *     finance: [{ name, url }, ...],
+ *     world:   [{ name, url }, ...]
+ *   }
+ */
 function parseEnvSources(envString) {
   if (!envString) return null;
 
+  // Known source aliases mapped to URLs and default topic (for reference only)
   const KNOWN = {
-  // 🔄 Thay vì Reuters (đã chết), mình thay bằng MarketWatch
-  // MarketWatch (finance)
-  marketwatch:     { url: "https://www.marketwatch.com/rss/topstories", topic: "finance" },
-  "marketwatch-rt": { url: "https://www.marketwatch.com/rss/realtimeheadlines", topic: "finance" },
+    // MarketWatch (finance)
+    marketwatch:      { url: "https://www.marketwatch.com/rss/topstories", topic: "finance" },
+    "marketwatch-rt": { url: "https://www.marketwatch.com/rss/realtimeheadlines", topic: "finance" },
 
+    // The Verge (tech)
+    theverge: { url: "https://www.theverge.com/rss/index.xml", topic: "tech" },
 
-  // The Verge (tech) ✅ sống
-  theverge: { url: "https://www.theverge.com/rss/index.xml", topic: "tech" },
+    // BBC (tech + world)
+    "bbc-tech":  { url: "https://feeds.bbci.co.uk/news/technology/rss.xml", topic: "tech" },
+    "bbc-world": { url: "https://feeds.bbci.co.uk/news/world/rss.xml", topic: "world" },
 
-  // BBC (tech + world) ✅ sống
-  "bbc-tech":  { url: "https://feeds.bbci.co.uk/news/technology/rss.xml", topic: "tech" },
-  "bbc-world": { url: "https://feeds.bbci.co.uk/news/world/rss.xml", topic: "world" },
+    // Hacker News (tech)
+    hackernews: { url: "https://hnrss.org/frontpage", topic: "tech" },
 
-  // HackerNews làm nguồn tech thay thế
-  hackernews: { url: "https://hnrss.org/frontpage", topic: "tech" },
+    // Al Jazeera (world)
+    aljazeera: { url: "https://www.aljazeera.com/xml/rss/all.xml", topic: "world" },
+  };
 
-  // Al Jazeera làm nguồn world thay thế
-  aljazeera: { url: "https://www.aljazeera.com/xml/rss/all.xml", topic: "world" },
-};
+  function resolve(name, topic) {
+    // Direct match in KNOWN table
+    if (KNOWN[name]) return { name, url: KNOWN[name].url };
 
+    // Special alias: "bbc" picks tech/world feed by topic
+    if (name === "bbc") {
+      if (topic === "tech") return { name: "bbc", url: KNOWN["bbc-tech"].url };
+      return { name: "bbc", url: KNOWN["bbc-world"].url };
+    }
 
-function resolve(name, topic) {
-  // Nếu có trong KNOWN thì lấy trực tiếp
-  if (KNOWN[name]) return { name, url: KNOWN[name].url };
+    // Special alias: "marketwatch" defaults to Top Stories
+    if (name === "marketwatch") {
+      return { name: "marketwatch", url: KNOWN["marketwatch"].url };
+    }
 
-  // Alias đặc biệt: bbc
-  if (name === "bbc") {
-    if (topic === "tech") return { name: "bbc", url: KNOWN["bbc-tech"].url };
-    return { name: "bbc", url: KNOWN["bbc-world"].url };
+    return null;
   }
-
-  // Alias đặc biệt: marketwatch → mặc định Top Stories
-  if (name === "marketwatch") {
-    return { name: "marketwatch", url: KNOWN["marketwatch"].url };
-  }
-
-  return null;
-}
-
-
 
   const result = {};
   for (const block of envString.split(";")) {
@@ -81,9 +86,9 @@ function resolve(name, topic) {
   return Object.keys(result).length ? result : null;
 }
 
-// parseEnvSources có thể trả ra object rỗng hoặc null
+// Note: parseEnvSources may return an empty object or null
 const parsed = parseEnvSources(process.env.NEWS_SOURCES) || {};
-// merge: ENV override default
+// Merge: ENV overrides defaults where provided
 const SOURCES = { ...DEFAULT_SOURCES, ...parsed };
 
 function getSourcesByTopic(topic = "tech") {
@@ -92,4 +97,3 @@ function getSourcesByTopic(topic = "tech") {
 }
 
 export { getSourcesByTopic, DEFAULT_SOURCES };
-

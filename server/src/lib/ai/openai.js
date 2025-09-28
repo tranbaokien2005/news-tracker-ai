@@ -1,8 +1,16 @@
 import OpenAI from "openai";
 
 /**
- * Gọi OpenAI để tóm tắt văn bản.
- * Trả về { content, usage }
+ * Call OpenAI to generate a text summary.
+ * @param {Object} params
+ * @param {string} params.text - Input text to summarize (required).
+ * @param {string} [params.lang="en"] - Language code, or "auto" to detect.
+ * @param {"bullets"|"paragraph"} [params.mode="bullets"] - Output format.
+ * @param {string} [params.model] - OpenAI model (defaults to AI_MODEL env or gpt-4o-mini).
+ * @param {string} [params.title] - Optional title to provide context.
+ * @param {string} [params.topic] - Optional topic to guide style.
+ * @returns {Promise<{content: string, usage: object}>}
+ * @throws {Error} Missing API key or failed completion.
  */
 export async function openaiSummarize({
   text,
@@ -12,7 +20,7 @@ export async function openaiSummarize({
   title,
   topic,
 }) {
-  // ✅ Lấy API key theo env của dự án; không tạo client ở top-level
+  // Get API key from env; avoid top-level client creation
   const apiKey = process.env.AI_API_KEY || process.env.OPENAI_API_KEY;
   if (!apiKey) {
     const err = new Error("Missing OPENAI_API_KEY/AI_API_KEY");
@@ -25,12 +33,15 @@ export async function openaiSummarize({
     mode === "paragraph"
       ? "Write one compact paragraph (~80–120 words)."
       : "Write 3–5 concise bullet points.";
-  const langHint = lang && lang !== "auto" ? `Write in ${lang}.` : "Detect the input language and write in that language.";
+  const langHint =
+    lang && lang !== "auto"
+      ? `Write in ${lang}.`
+      : "Detect the input language and write in that language.";
   const topicHint = topic ? `Topic: ${topic}.` : "";
 
   const system = [
     "You are a precise news summarizer.",
-    "Preserve facts, names, numbers, tickers, dates. Avoid speculation.",
+    "Preserve facts, names, numbers, tickers, and dates. Avoid speculation.",
     "No headings, no emojis.",
   ].join(" ");
 
@@ -43,7 +54,9 @@ export async function openaiSummarize({
     "=== ARTICLE START ===",
     text,
     "=== ARTICLE END ===",
-  ].filter(Boolean).join("\n");
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   try {
     const r = await client.chat.completions.create({
@@ -63,7 +76,12 @@ export async function openaiSummarize({
     }
     return {
       content,
-      usage: r?.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+      usage:
+        r?.usage || {
+          prompt_tokens: 0,
+          completion_tokens: 0,
+          total_tokens: 0,
+        },
     };
   } catch (e) {
     const err = new Error("Failed to generate summary");

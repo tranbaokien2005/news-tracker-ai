@@ -36,7 +36,7 @@ function buildMockSummary({
     ? sentences
     : ["Sample point 1.", "Sample point 2.", "Sample point 3."];
 
-  // ✅ Contract-compliant summary object
+  // Contract-compliant summary object
   const summary =
     mode === "paragraph"
       ? { mode: "paragraph", text: bullets.join(" ") }
@@ -46,7 +46,7 @@ function buildMockSummary({
     summary,
     lang,
     model: "mock",
-    cacheStatus: "live", // ✅ use cacheStatus instead of boolean 'cached'
+    cacheStatus: "live", // use cacheStatus instead of boolean 'cached'
     usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
     meta: {
       provider: meta.provider || "mock",
