@@ -94,15 +94,15 @@ export default function ArticleCard({
           </div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions  (MVP): Share only. Hid bookmark*/}
         <div className="flex items-center gap-1">
-          <button
+          {/* <button
             onClick={() => onBookmark?.(article.id)}
             className="p-1 text-[hsl(var(--color-muted))] hover:text-[hsl(var(--color-text))] hover:bg-[hsl(var(--color-border))] rounded transition-all duration-150"
             aria-label="Bookmark article"
           >
             <Bookmark className="h-4 w-4" />
-          </button>
+          </button> */}
           <button
             onClick={() => onShare?.(article.id)}
             className="p-1 text-[hsl(var(--color-muted))] hover:text-[hsl(var(--color-text))] hover:bg-[hsl(var(--color-border))] rounded transition-all duration-150"
