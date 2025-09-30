@@ -6,6 +6,7 @@ import summarizeRouter from "./summarize.js";
 
 const router = Router();
 
+// Health check endpoint
 router.get("/health", (_req, res) => {
   res.json({ ok: true, version: "v1" });
 });
@@ -13,7 +14,7 @@ router.get("/health", (_req, res) => {
 // GET /api/v1/news?topic=tech&page=1&forceRefresh=0
 router.get("/news", async (req, res) => {
   try {
-    // 4) Validate/sanitize topic theo flag
+    // Validate and sanitize topic (strict vs fallback mode)
     const allowed = new Set(["tech", "finance", "world"]);
     const rawTopic = String(req.query.topic || "").toLowerCase();
     const strict =
@@ -28,43 +29,44 @@ router.get("/news", async (req, res) => {
         message: "Topic must be one of: tech, finance, world",
       });
     } else {
-      topic = "tech"; // fallback ở chế độ non-strict (MVP/demo)
+      topic = "tech"; // fallback in non-strict mode (MVP/demo)
     }
 
     const page = Math.max(parseInt(req.query.page || "1", 10), 1);
 
-    // 1) pageSize từ ENV (1..100)
+    // pageSize from ENV (bounded 1..100)
     const pageSize = Math.min(
       Math.max(parseInt(process.env.NEWS_PAGE_SIZE || "30", 10), 1),
       100
     );
 
-    // ✅ TTL: đọc giây từ ENV, đổi sang milliseconds cho cache.js
+    // TTL: read seconds from ENV, convert to milliseconds for cache.js
     const ttlSec = parseInt(
       process.env.NEWS_CACHE_TTL || process.env.CACHE_TTL || "300",
       10
     );
     const ttlMs = ttlSec * 1000;
 
-    // 2) Force refresh
+    // Handle forceRefresh query param
     const forceRefresh = req.query.forceRefresh === "1";
     const cacheKey = `news:${topic}`;
     if (forceRefresh) delCache(cacheKey);
 
-    // 3) Cache hit/miss
+    // Cache lookup
     let allItems = getCache(cacheKey);
     const cacheHit = Boolean(allItems);
 
+    // If no cache, fetch from RSS sources
     if (!allItems) {
       const sources = getSourcesByTopic(topic);
       allItems = await fetchTopicFeed(topic, sources);
       if (!allItems.length) {
         return res.status(502).json({
           error: "UPSTREAM_FETCH_FAILED",
-          message: "Không lấy được RSS từ các nguồn.",
+          message: "Failed to fetch RSS from upstream sources.",
         });
       }
-      setCache(cacheKey, allItems, ttlMs); // dùng ms
+      setCache(cacheKey, allItems, ttlMs); // store with ms TTL
     }
 
     const count = allItems.length;
@@ -83,11 +85,12 @@ router.get("/news", async (req, res) => {
     console.error(err);
     res.status(502).json({
       error: "UPSTREAM_FETCH_FAILED",
-      message: "Có lỗi khi lấy RSS.",
+      message: "Unexpected error while fetching RSS.",
     });
   }
 });
+
+// Attach summarize router
 router.use("/", summarizeRouter);
 
 export default router;
-
