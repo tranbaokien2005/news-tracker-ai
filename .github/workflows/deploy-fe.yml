@@ -8,7 +8,7 @@ on:
       - '.github/workflows/deploy-fe.yml'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: vercel-fe-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -34,9 +34,10 @@ jobs:
         run: npm run build
         working-directory: client
 
+      # Vercel CLI v48+ không còn nhận --org-id/--project-id.
+      # Chạy trong thư mục "client" (đã link project qua UI/Integration)
       - name: Deploy to Vercel
-        run: |
-          npx vercel --token=${{ secrets.VERCEL_TOKEN }} \
-                     --org-id=${{ secrets.VERCEL_ORG_ID }} \
-                     --project-id=${{ secrets.VERCEL_PROJECT_ID }} \
-                     --prod --yes
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel deploy --prebuilt --prod --yes
+        working-directory: client
