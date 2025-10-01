@@ -2,11 +2,22 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
+    # Chỉ chạy CI khi có thay đổi liên quan tới BE/CI hoặc postman collection
+    paths:
+      - 'server/**'
+      - 'docs/postman/**'
+      - '.github/workflows/ci.yml'
+
+# Hủy run cũ nếu cùng workflow + nhánh để tránh chạy “đúp”
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     env:
       NODE_ENV: test
       CI: true
@@ -28,14 +39,16 @@ jobs:
       - name: Install root deps
         run: npm ci
 
-      # CÀI deps cho backend (/server)  ← QUAN TRỌNG
+      # Cài deps cho backend (/server)
       - name: Install server deps
-        run: npm ci
         working-directory: server
+        run: npm ci
 
+      # Khởi động server với mock AI (không cần OPENAI_API_KEY)
       - name: Start server (mock AI)
         env:
           PORT: 5051
+          NODE_ENV: production
           AI_PROVIDER: mock
           AI_MODEL: gpt-4o-mini
           NEWS_PAGE_SIZE: 30
@@ -43,6 +56,7 @@ jobs:
           SUMMARIZE_CACHE_TTL: 600
         run: |
           nohup npm run server:start > server.log 2>&1 &
+          # chờ tối đa 30s cho tới khi /health OK
           for i in {1..30}; do
             if curl -fsS http://localhost:5051/api/v1/health >/dev/null; then
               echo "Server is healthy"
@@ -50,7 +64,12 @@ jobs:
             fi
             sleep 1
           done
-          curl -fsS http://localhost:5051/api/v1/health >/dev/null || { echo "Server failed to become healthy"; cat server.log; exit 1; }
+          # Nếu chưa healthy, in log và fail
+          curl -fsS http://localhost:5051/api/v1/health >/dev/null || { 
+            echo "Server failed to become healthy"; 
+            tail -n +1 server.log; 
+            exit 1; 
+          }
 
       - name: Run Postman (Newman)
         run: |
